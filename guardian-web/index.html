@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guardián · Vigilancia de fauna con IA</title>
+  <link rel="icon" href="assets/guardian.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f2a2e">
+  <meta name="description" content="Identifica animales con la cámara, registra avistamientos y detecta posible caza furtiva.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="assets/guardian.svg" alt="" width="40" height="40">
+    <div>
+      <h1>Guardián</h1>
+      <p>Vigilancia de fauna con IA</p>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Secciones">
+    <button data-tab="scan" class="active">Escáner</button>
+    <button data-tab="map">Mapa</button>
+    <button data-tab="stats">Estadísticas</button>
+    <button data-tab="alerts">Alertas <span id="alertBadge" class="badge hidden">0</span></button>
+    <button data-tab="settings">Ajustes</button>
+  </nav>
+  <div id="status" class="status loading">Cargando IA…</div>
+  <button id="btnInstall" class="btn primary hidden">Instalar app</button>
+</header>
+
+<main>
+  <!-- ================= ESCÁNER ================= -->
+  <section id="tab-scan" class="tab active">
+    <div class="scan-grid">
+      <div class="viewer-col">
+        <div class="toolbar">
+          <select id="sourceSelect" aria-label="Fuente de video"></select>
+          <button id="btnStart" class="btn primary">Encender cámara</button>
+          <button id="btnStop" class="btn">Apagar</button>
+          <label class="btn file-btn">Subir foto<input type="file" id="fileInput" accept="image/*" hidden></label>
+        </div>
+
+        <div id="ipcamRow" class="toolbar hidden">
+          <input id="ipcamUrl" type="url" placeholder="URL de cámara IP o dron (MJPEG), ej. http://192.168.1.50:8080/video">
+          <button id="btnIpcam" class="btn">Conectar</button>
+        </div>
+
+        <div class="viewer" id="viewer">
+          <video id="video" autoplay playsinline muted class="hidden"></video>
+          <img id="photo" alt="Foto a analizar" class="hidden">
+          <img id="ipcam" alt="Transmisión de cámara remota" class="hidden" crossorigin="anonymous">
+          <canvas id="overlay"></canvas>
+          <div class="placeholder" id="placeholder">
+            <strong>Apunta la cámara a un animal</strong>
+            <span>o sube una foto. La IA lo identifica y registra el avistamiento.</span>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button id="btnSnap" class="btn primary">Analizar ahora</button>
+          <button id="btnClaude" class="btn">Identificar con IA avanzada</button>
+          <label class="check"><input type="checkbox" id="autoScan" checked> Escaneo automático</label>
+          <label class="check danger"><input type="checkbox" id="protectedMode"> Zona protegida (detectar personas y vehículos)</label>
+        </div>
+        <div id="predictions" class="preds" aria-live="polite"></div>
+      </div>
+
+      <aside class="info" id="infoPanel" aria-live="polite">
+        <div class="empty">
+          <h2>Ficha de especie</h2>
+          <p>Cuando la IA reconozca un animal verás aquí su hábitat, cómo se reproduce, qué come y dónde vive.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= MAPA ================= -->
+  <section id="tab-map" class="tab">
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="legend">
+        <span><i class="dot ok"></i>Avistamiento</span>
+        <span><i class="dot bad"></i>Alerta</span>
+        <span><i class="dot range"></i>Distribución de la especie</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ESTADÍSTICAS ================= -->
+  <section id="tab-stats" class="tab">
+    <div class="counters">
+      <div><b id="cTotal">0</b><span>avistamientos</span></div>
+      <div><b id="cSpecies">0</b><span>especies distintas</span></div>
+      <div><b id="cThreat">0</b><span>avistamientos de especies amenazadas</span></div>
+      <div><b id="cAlerts">0</b><span>alertas</span></div>
+    </div>
+    <div class="stats-grid">
+      <div class="card"><h3>Avistamientos por especie</h3><div class="chart-box"><canvas id="chartSpecies"></canvas></div></div>
+      <div class="card"><h3>Actividad de los últimos 7 días</h3><div class="chart-box"><canvas id="chartDays"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h3>Detalle por especie</h3>
+        <div class="row">
+          <button id="btnReport" class="btn primary">Generar reporte ambiental</button>
+          <button id="btnCsv" class="btn">Exportar CSV</button>
+          <button id="btnJson" class="btn">Exportar JSON</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Especie</th><th>Estado de conservación</th><th>Avistamientos</th><th>Confianza máx.</th><th>Último</th></tr></thead>
+          <tbody id="speciesTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ALERTAS ================= -->
+  <section id="tab-alerts" class="tab">
+    <div class="card-head">
+      <h2>Alertas de posible caza furtiva</h2>
+      <div class="row">
+        <button id="btnSimulate" class="btn">Simular alerta</button>
+        <button id="btnAlertsCsv" class="btn">Exportar alertas</button>
+      </div>
+    </div>
+    <div id="alertList" class="alert-list"></div>
+  </section>
+
+  <!-- ================= AJUSTES ================= -->
+  <section id="tab-settings" class="tab">
+    <div class="settings">
+      <div class="card">
+        <h3>Conexión con otros dispositivos</h3>
+        <p class="hint">Cada alerta se envía como JSON a esta dirección. Sirve para un servidor, un bot de Telegram, un dron con API o la app del celular.</p>
+        <label>URL de webhook<input id="setWebhook" type="url" placeholder="https://mi-servidor.com/alertas"></label>
+        <button id="btnTestHook" class="btn">Enviar alerta de prueba</button>
+      </div>
+      <div class="card">
+        <h3>IA avanzada (Claude)</h3>
+        <p class="hint">Opcional. Identifica cualquier especie y genera su ficha. La clave se guarda solo en este navegador.</p>
+        <label>API key de Anthropic<input id="setKey" type="password" placeholder="sk-ant-..."></label>
+        <label>Modelo<input id="setModel" type="text"></label>
+      </div>
+      <div class="card">
+        <h3>Reconocimiento</h3>
+        <label>Confianza mínima: <b id="confVal">30%</b><input id="setConf" type="range" min="0.1" max="0.9" step="0.05"></label>
+        <label class="check"><input id="setNotify" type="checkbox"> Notificaciones del sistema</label>
+        <label class="check"><input id="setSound" type="checkbox"> Sonido de alerta</label>
+      </div>
+      <div class="card">
+        <h3>Datos</h3>
+        <p class="hint">Los avistamientos y alertas se guardan en este navegador.</p>
+        <button id="btnClear" class="btn danger-btn">Borrar todos los datos</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toasts" class="toasts" aria-live="assertive"></div>
+
+<!-- Librerías -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<!-- App -->
+<script src="js/species.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
