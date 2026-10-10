@@ -99,6 +99,7 @@
   .viewer-card .toolbar { display: grid; grid-template-columns: 1fr 1fr; }
   .viewer-card .toolbar select.input, .viewer-card .toolbar .input[type=url] { grid-column: 1 / -1; }
   .viewer-card .toolbar .btn { width: 100%; }
+  .viewer-card .toolbar label.btn { grid-column: 1 / -1; }
   .viewer { aspect-ratio: 3 / 4; max-height: 52dvh; }
 }
 /* El HUD solo aparece cuando hay imagen */
