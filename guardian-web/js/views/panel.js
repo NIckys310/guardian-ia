@@ -33,7 +33,8 @@ async function render() {
   const now = new Date();
   const h = now.getHours();
   $('#heroDate').textContent = now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  $('#heroHello').textContent = `${h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches'}, ${auth.displayName.split(' ')[0]}`;
+  const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+  $('#heroHello').textContent = auth.user && !auth.isDevice ? `${saludo}, ${auth.displayName.split(' ')[0]}` : `${saludo}, guardaparques`;
 
   const sightings = active('sighting'), alerts = active('alert');
   const today0 = new Date(); today0.setHours(0, 0, 0, 0);
