@@ -109,8 +109,12 @@ export function go(name, first = false) {
     current = name;
     $('#main').scrollTop = 0;
   };
-  if (document.startViewTransition && !first && settings.motion) document.startViewTransition(swap);
-  else swap();
+  if (document.startViewTransition && !first && settings.motion && !document.hidden) {
+    const t = document.startViewTransition(swap);
+    t.ready.catch(() => {});        // si el navegador cancela la animación, no es un error
+    t.finished.catch(() => {});
+    t.updateCallbackDone.catch(() => swap());
+  } else swap();
   if (location.hash !== '#/' + name) history.replaceState(null, '', '#/' + name);
 }
 bus.on('nav:go', (v) => go(v));
