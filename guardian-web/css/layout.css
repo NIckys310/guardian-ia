@@ -1,0 +1,137 @@
+/* =========================================================
+   GUARDIÁN · Estructura de la aplicación
+   Ocupa toda la pantalla en PC, tablet y celular:
+   - PC: menú lateral + barra superior + contenido
+   - Tablet: menú lateral solo con íconos
+   - Celular: barra inferior de navegación
+   ========================================================= */
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  grid-template-rows: var(--topbar-h) minmax(0, 1fr);
+  height: 100dvh;
+  width: 100vw;
+  background:
+    radial-gradient(1200px 600px at 110% -10%, color-mix(in srgb, var(--olive) 7%, transparent), transparent 60%),
+    var(--bg);
+}
+
+/* ---------- Menú lateral ---------- */
+.sidebar {
+  grid-row: 1 / -1;
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 14px 12px;
+  background: var(--bg-2);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  z-index: 20;
+}
+.brand { display: flex; align-items: center; gap: 12px; padding: 6px 8px 18px; }
+.brand img { width: 38px; height: 38px; border-radius: 10px; }
+.brand h1 { font: 800 19px/1 var(--font); letter-spacing: -.02em; }
+.brand p { font: 500 10.5px/1.2 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+
+.nav-label { font: 600 10.5px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--faint); padding: 14px 10px 6px; }
+.nav-btn {
+  position: relative;
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 10px 12px;
+  background: none; border: 0; border-radius: var(--radius-sm);
+  color: var(--muted); cursor: pointer; text-align: left; font-weight: 500;
+  transition: background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
+}
+.nav-btn svg { width: 20px; height: 20px; flex: none; }
+.nav-btn:hover { background: var(--panel); color: var(--text); }
+.nav-btn:active { transform: scale(.98); }
+.nav-btn.active { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+.nav-btn.active::before {
+  content: ""; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 3px;
+  border-radius: 0 3px 3px 0; background: var(--olive);
+}
+.nav-btn .badge { margin-left: auto; }
+.sidebar-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+
+/* ---------- Barra superior ---------- */
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+.topbar .page-title { display: flex; flex-direction: column; min-width: 0; }
+.topbar .page-title h2 { font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar .page-title span { font: 500 11px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.topbar .spacer { flex: 1; }
+.topbar .mobile-brand { display: none; }
+
+/* ---------- Contenido ---------- */
+.main { grid-column: 2; overflow: auto; position: relative; scroll-behavior: smooth; }
+.view { display: none; padding: 24px; min-height: 100%; max-width: 1600px; margin: 0 auto; }
+.view.active { display: block; }
+.view-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.view-head h3 { font-size: 22px; }
+.view-head p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+/* Rejillas simétricas */
+.grid { display: grid; gap: var(--gap); }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.span-2 { grid-column: span 2; }
+.span-all { grid-column: 1 / -1; }
+.stack { display: grid; gap: var(--gap); align-content: start; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row.end { justify-content: flex-end; }
+.row.between { justify-content: space-between; }
+
+/* ---------- Barra inferior (celular) ---------- */
+.bottomnav { display: none; }
+
+/* ---------- Tablet: menú solo con íconos ---------- */
+@media (max-width: 1180px) {
+  :root { --sidebar-w: 76px; }
+  .brand { justify-content: center; padding: 6px 0 14px; }
+  .brand div, .nav-label, .nav-btn span.label, .sidebar-foot .user-chip .who { display: none; }
+  .nav-btn { justify-content: center; padding: 12px; }
+  .nav-btn .badge { position: absolute; top: 4px; right: 4px; margin: 0; }
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 980px) {
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-2.collapse-md { grid-template-columns: 1fr; }
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 720px) {
+  :root { --topbar-h: 56px; --gap: 12px; }
+  body { font-size: 14.5px; }
+  .shell { grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--topbar-h) minmax(0, 1fr) calc(var(--bottomnav-h) + env(safe-area-inset-bottom)); }
+  .sidebar { display: none; }
+  .topbar { grid-column: 1; padding: 0 16px; }
+  .topbar .mobile-brand { display: block; width: 30px; height: 30px; border-radius: 8px; }
+  .topbar .hide-sm { display: none !important; }
+  .main { grid-column: 1; }
+  .view { padding: 16px; }
+  .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); }
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .span-2 { grid-column: auto; }
+  .bottomnav {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    border-top: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg-2) 92%, transparent);
+    backdrop-filter: blur(12px);
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 30;
+  }
+  .bottomnav button {
+    position: relative;
+    display: grid; place-items: center; gap: 2px; align-content: center;
+    background: none; border: 0; color: var(--muted); font: 600 10.5px var(--font); cursor: pointer;
+  }
+  .bottomnav button svg { width: 22px; height: 22px; }
+  .bottomnav button.active { color: var(--olive); }
+  .bottomnav button.active::after { content: ""; position: absolute; top: 0; width: 28px; height: 3px; border-radius: 0 0 3px 3px; background: var(--olive); }
+  .bottomnav .badge { position: absolute; top: 6px; right: calc(50% - 22px); }
+}
