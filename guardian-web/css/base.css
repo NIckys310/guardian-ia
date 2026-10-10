@@ -98,6 +98,8 @@ img, video, canvas { max-width: 100%; }
 .mono { font-family: var(--mono); font-feature-settings: "zero" 1; }
 .muted { color: var(--muted); }
 .serif { font-family: var(--serif); }
+/* Tamaño por defecto de los íconos (cada componente puede cambiarlo) */
+svg.ico { width: 1.15em; height: 1.15em; flex: none; vertical-align: -0.2em; }
 
 /* Barras de desplazamiento discretas */
 * { scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
