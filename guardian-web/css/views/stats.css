@@ -10,3 +10,19 @@
 #speciesTable td:first-child { min-width: 220px; }
 #speciesTable .sp { display: flex; align-items: center; gap: 10px; }
 #speciesTable .sp i { font-family: var(--serif); color: var(--muted); }
+
+/* ---------- Animaciones ---------- */
+#view-estadisticas .card { transition: transform .3s var(--ease), border-color .3s var(--ease), box-shadow .3s var(--ease); }
+#view-estadisticas .card:hover { transform: translateY(-3px); border-color: var(--line-2); box-shadow: var(--shadow); }
+#view-estadisticas .kpi { overflow: hidden; }
+#view-estadisticas .kpi::after {            /* barrido de luz al actualizarse */
+  content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, color-mix(in srgb, var(--c, var(--olive)) 18%, transparent), transparent 70%);
+  transform: translateX(-100%); pointer-events: none;
+}
+#view-estadisticas .kpi:has(.bump)::after { animation: kpi-sweep .9s var(--ease); }
+@keyframes kpi-sweep { to { transform: translateX(100%); } }
+#view-estadisticas .kpi .kpi-label i { animation: ping 2.4s infinite; }
+#view-estadisticas .chart-box { animation: zoom-in .6s var(--ease) both; }
+#view-estadisticas .segmented button.active { animation: pop-in .3s var(--ease-spring); }
+#speciesTable tr.row-in { animation: rise .45s var(--ease) both; }
+#speciesTable tr:hover .bar { filter: brightness(1.25); }
