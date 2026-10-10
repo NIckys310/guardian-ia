@@ -11,6 +11,7 @@ import { toast } from '../ui/toast.js';
 import { active, insert, update, moveToTrash, restore, messagesOf, addMessage, data } from '../services/repo.js';
 import { claude, chatStream, checkClaude } from '../services/ai-cloud.js';
 import { auth } from '../services/auth.js';
+import { countUse } from '../services/plan.js';
 
 const SUGGESTIONS = [
   '¿Qué especie vi más esta semana?',
@@ -145,11 +146,15 @@ async function send() {
     }, abort.signal);
     out.classList.remove('cursor');
     out.innerHTML = md(full);
+    countUse('chat');
     await addMessage(convId, 'assistant', full);
   } catch (e) {
     out.classList.remove('cursor');
     if (e.name === 'AbortError') { out.closest('.msg').remove(); }
-    else { out.classList.add('error'); out.textContent = e.message; }
+    else {
+      out.classList.add('error'); out.textContent = e.message;
+      if (e.code === 429) out.insertAdjacentHTML('beforeend', ` <button class="btn sm primary" data-go="pro">${icon('spark')}Ver Guardián Pro</button>`);
+    }
   } finally {
     sending = false; $('#chatSend').disabled = false; abort = null;
     if (convId === currentId) update('conversation', convId, { updated_at: new Date().toISOString() });

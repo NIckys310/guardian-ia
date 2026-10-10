@@ -15,7 +15,6 @@ export const DEFAULTS = {
   scanMs: 1500,             // cada cuánto se analiza la cámara
   protectedMode: false,     // zona protegida (detectar personas y vehículos)
   autoClaude: true,         // consultar a Claude si la IA local duda
-  autoClaudeMax: 20,        // máximo de consultas automáticas por sesión
   notify: true,
   sound: true,
   idleMin: 30

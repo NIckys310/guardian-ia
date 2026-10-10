@@ -15,12 +15,14 @@ import { claude, checkClaude } from '../services/ai-cloud.js';
 import { askNotificationPermission, beep } from '../services/notify.js';
 import { bt, btSupported, connectBluetooth, disconnectBluetooth, btNotify } from '../services/bluetooth.js';
 import { cloudConfigured } from '../config.js';
+import { plan, isPro } from '../services/plan.js';
 
 const card = (ic, title, hint, body) => `<div class="card reveal"><h4 class="card-head" style="margin:0 0 4px">${icon(ic)} ${title}</h4><p class="hint">${hint}</p>${body}</div>`;
 const sw = (id, label, help, checked, cls = '') => `<label class="switch ${cls}"><span>${label}<small>${help}</small></span><input type="checkbox" id="${id}" ${checked ? 'checked' : ''}></label>`;
 
 export function init() {
   bus.on('bt:status', () => paintBluetooth());
+  bus.on('plan:change', () => { if ($('#view-ajustes').classList.contains('active')) render(); });
   bus.on('claude:status', () => { if ($('#view-ajustes').classList.contains('active')) render(); }); }
 export function show() { render(); }
 
@@ -48,7 +50,7 @@ async function render() {
       <div class="set-row"><div><b>Velocidad del escaneo</b><small>Cada cuánto analiza la cámara.</small></div>
         <select class="input" id="setScanMs">${[[800, 'Muy rápido (0,8 s)'], [1500, 'Normal (1,5 s)'], [3000, 'Ahorro (3 s)'], [6000, 'Batería (6 s)']].map(([v, l]) => `<option value="${v}" ${+s.scanMs === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       ${sw('setAutoClaude', 'IA avanzada automática', 'Si la IA local ve un animal pero no sabe cuál es, consulta a Claude sola (máx. 1 cada 30 s).', s.autoClaude)}
-      <div class="set-row"><div><b>Límite automático por sesión</b><small>Para cuidar los créditos de la API.</small></div><select class="input" id="setAutoMax">${[5, 10, 20, 50].map((v) => `<option ${+s.autoClaudeMax === v ? 'selected' : ''}>${v}</option>`).join('')}</select></div>`),
+      <div class="set-row"><div><b>Tu plan: ${esc(plan.nombre)}</b><small>${plan.limite_auto} consultas automáticas por día · usadas hoy: ${plan.uso_hoy?.auto || 0}. ${isPro() ? 'Gracias por apoyar la conservación.' : '¿Necesitas más? Pásate a Guardián Pro.'}</small></div><button class="btn sm ${isPro() ? '' : 'primary'}" data-go="pro">${icon('spark')}${isPro() ? 'Ver mi plan' : 'Ver Guardián Pro'}</button></div>`),
     card('bell', 'Alertas y conexiones', 'Cómo te avisa Guardián.', `
       ${sw('setNotify', 'Notificaciones del sistema', 'Aunque Guardián esté minimizado.', s.notify)}
       ${sw('setSound', 'Sonido de alerta', 'Pitido corto al detectar algo.', s.sound)}
@@ -74,7 +76,6 @@ function bind() {
   on('#setConf', 'input', (e) => { $('#confOut').textContent = Math.round(e.target.value * 100) + '%'; saveSettings({ minConf: +e.target.value }); });
   on('#setScanMs', 'change', (e) => saveSettings({ scanMs: +e.target.value }));
   on('#setAutoClaude', 'change', (e) => saveSettings({ autoClaude: e.target.checked }));
-  on('#setAutoMax', 'change', (e) => saveSettings({ autoClaudeMax: +e.target.value }));
   on('#setNotify', 'change', (e) => { saveSettings({ notify: e.target.checked }); if (e.target.checked) askNotificationPermission(); });
   on('#setSound', 'change', (e) => saveSettings({ sound: e.target.checked }));
   paintBluetooth();

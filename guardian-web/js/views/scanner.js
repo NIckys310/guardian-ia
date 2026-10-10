@@ -17,6 +17,7 @@ import { askNotificationPermission } from '../services/notify.js';
 import { active, photoURL } from '../services/repo.js';
 import { geo } from '../services/geo.js';
 import { auth } from '../services/auth.js';
+import { plan, countUse } from '../services/plan.js';
 
 const S = { stream: null, source: null, busy: false, timer: null, last: null, current: null, wakeLock: null,
   autoClaudeCount: 0, lastAutoClaude: 0, claudeBusy: false, hud: null };
@@ -305,7 +306,7 @@ async function fetchWiki(term) {
 /* ---------- IA avanzada (Claude) ---------- */
 function maybeAutoClaude() {
   const now = Date.now();
-  if (S.claudeBusy || now - S.lastAutoClaude < 30_000 || S.autoClaudeCount >= settings.autoClaudeMax) return;
+  if (S.claudeBusy || S.limitReached || now - S.lastAutoClaude < 30_000 || (plan.uso_hoy?.auto || 0) >= plan.limite_auto) return;
   S.lastAutoClaude = now;
   S.autoClaudeCount++;
   identifyAdvanced(true);
@@ -325,6 +326,7 @@ async function identifyAdvanced(auto) {
   if (!auto) panel.innerHTML = `<div class="plate"><p class="loading-line"><span class="spinner"></span> Consultando a la IA avanzada…</p></div>`;
   try {
     const j = await identifyWithClaude(img, { kind: auto ? 'auto' : 'identify' });
+    countUse(auto ? 'auto' : 'identify');
     if (j.amenaza_humana) raiseAlert('ia', 0.9, { mensaje: j.motivo_amenaza || 'Posible actividad de caza detectada por la IA', photo: snapshotOf(el, 480, 0.7) });
     if (!j.es_animal) {
       if (!auto) panel.innerHTML = `<div class="plate"><h2>Sin animales</h2><p class="meta">La IA avanzada no encontró ningún animal en la imagen.</p></div>`;
@@ -340,6 +342,10 @@ async function identifyAdvanced(auto) {
     recordSighting(sp, j.confianza || 0.8, { photo: snapshotOf(el, 960, 0.78), fuente: S.source === 'photo' ? 'foto' : auth.isDevice ? 'celular' : 'camara', ia: 'claude', force: !auto });
   } catch (e) {
     if (e instanceof AIError && e.code === 503) claude.configured = false;
+    if (e instanceof AIError && e.code === 429) {
+      S.limitReached = auto;   // en automático deja de intentar por esta sesión
+      toast(e.message, 'warn', { action: { label: 'Ver Pro', fn: () => bus.emit('nav:go', 'pro') }, ms: 9000 });
+    }
     if (!auto) panel.innerHTML = `<div class="plate"><h2>No se pudo identificar</h2><p class="meta">${esc(e.message)}</p></div>`;
   } finally {
     S.claudeBusy = false;
