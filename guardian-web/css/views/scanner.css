@@ -1,0 +1,95 @@
+/* =========================================================
+   GUARDIÁN · Escáner
+   La imagen NUNCA ocupa toda la pantalla: vive dentro de un visor
+   de proporción fija y se adapta (sin deformarse). Al tocarla se
+   abre el visor ampliado.
+   ========================================================= */
+.scan-grid { align-items: stretch; }
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.toolbar select.input { width: auto; flex: 1 1 180px; min-width: 0; }
+.toolbar .input[type=url] { flex: 1 1 240px; }
+
+.viewer {
+  position: relative; overflow: hidden;
+  aspect-ratio: 4 / 3; max-height: min(58dvh, 560px); width: 100%;
+  display: grid; place-items: center;
+  border-radius: var(--radius-sm); border: 1px solid var(--line);
+  background:
+    linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 32px 32px,
+    var(--bg);
+  margin-bottom: 12px; cursor: zoom-in;
+  transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.viewer.live { border-color: color-mix(in srgb, var(--olive) 55%, var(--line)); box-shadow: var(--glow); }
+.viewer.threat { border-color: var(--alert); animation: ping-red 1.4s infinite; }
+
+/* El escenario toma el tamaño exacto de la imagen ajustada (lo calcula app) */
+.stage { position: relative; width: 100%; height: 100%; }
+.stage video, .stage img { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; border-radius: 4px; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+.scanline { display: none; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--olive); box-shadow: 0 0 14px var(--olive); pointer-events: none; }
+.viewer.scanning .scanline { display: block; animation: sweep 2.6s linear infinite alternate; }
+
+/* Esquinas de mira */
+.reticle { position: absolute; inset: 14px; pointer-events: none; }
+.reticle i { position: absolute; width: 22px; height: 22px; border: 2px solid color-mix(in srgb, var(--olive) 80%, transparent); }
+.reticle i:nth-child(1) { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.reticle i:nth-child(2) { right: 0; top: 0; border-left: 0; border-bottom: 0; }
+.reticle i:nth-child(3) { left: 0; bottom: 0; border-right: 0; border-top: 0; }
+.reticle i:nth-child(4) { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+.viewer.live .reticle i { animation: blink 2.4s infinite; }
+
+.hud { position: absolute; left: 16px; right: 60px; bottom: 12px; display: flex; gap: 14px; font-size: 11.5px; color: #cfe3bd; text-shadow: 0 1px 2px #000; pointer-events: none; }
+.viewer-expand { position: absolute; right: 12px; bottom: 10px; background: rgba(0,0,0,.45); border-color: rgba(255,255,255,.15); color: #fff; }
+
+.placeholder { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; text-align: center; padding: 24px; background: color-mix(in srgb, var(--bg) 70%, transparent); }
+.placeholder strong { font: 600 20px/1.2 var(--serif); }
+.placeholder span { color: var(--muted); max-width: 38ch; font-size: 14px; }
+.radar { position: relative; width: 84px; height: 84px; border-radius: 50%; border: 1px solid var(--line-2); margin-bottom: 6px;
+  background: repeating-radial-gradient(circle, transparent 0 13px, color-mix(in srgb, var(--olive) 22%, transparent) 13px 14px); }
+.radar i { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, color-mix(in srgb, var(--olive) 55%, transparent), transparent 30%); animation: radar 2.8s linear infinite; }
+
+.switches { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+@media (max-width: 520px) { .switches { grid-template-columns: 1fr; } }
+
+.preds { display: flex; flex-wrap: wrap; gap: 6px; min-height: 26px; }
+.pred { animation: pop-in .3s var(--ease-spring); }
+
+/* ---------- Ficha de especie (lámina de guía de campo) ---------- */
+.plate-card { display: flex; flex-direction: column; }
+.plate-card > .empty { flex: 1; }
+.plate {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--paper); color: var(--ink); border-radius: var(--radius-sm); padding: 22px;
+  animation: rise .45s var(--ease);
+  background-image: radial-gradient(circle at 100% 0, rgba(95, 125, 58, .12), transparent 40%);
+}
+.plate .src { display: flex; justify-content: space-between; gap: 12px; font: 600 11.5px var(--mono); color: #5d6b5f; text-transform: uppercase; letter-spacing: .06em; }
+.plate .head { display: flex; align-items: center; gap: 12px; margin: 12px 0 2px; }
+.plate h2 { font: 600 clamp(28px, 3vw, 38px)/1.05 var(--serif); letter-spacing: -.02em; }
+.plate .sci { font: italic 400 17px var(--serif); color: #4a5a4d; }
+.plate .meter { margin-top: 14px; }
+.plate .meter .progress { background: #d9d3c0; }
+.plate dl { margin: 18px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+.plate dt { font: 700 11px var(--mono); color: #3f6a2a; text-transform: uppercase; letter-spacing: .08em; }
+.plate dd { margin: 3px 0 0; font-size: 14px; line-height: 1.45; }
+.plate .plate-actions { margin-top: auto; padding-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
+.plate .btn { background: #fff; border-color: #d6cfbb; color: var(--ink); }
+.plate .btn.primary { background: var(--amber); border-color: var(--amber); color: #241803; }
+.plate .meta { margin-top: 12px; font-size: 12.5px; color: #5d6b5f; }
+.plate .loading-line { display: flex; align-items: center; gap: 10px; color: #4a5a4d; padding: 20px 0; }
+@media (max-width: 1280px) { .plate dl { grid-template-columns: 1fr; } }
+
+/* ---------- Capturas recientes ---------- */
+.captures { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.capture {
+  position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius-sm); overflow: hidden;
+  background: var(--panel-3); border: 1px solid var(--line); cursor: zoom-in; padding: 0;
+  animation: pop-in .35s var(--ease-spring);
+}
+.capture img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s var(--ease); }
+.capture:hover img { transform: scale(1.06); }
+.capture span { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 8px 6px; font: 600 12px var(--font); color: #fff; text-align: left; background: linear-gradient(transparent, rgba(0,0,0,.75)); }
+.capture .grp { position: absolute; top: 6px; left: 6px; }
