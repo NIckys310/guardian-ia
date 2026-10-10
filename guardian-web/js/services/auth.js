@@ -159,7 +159,7 @@ export async function mfaEnroll() {
   for (const f of (list?.all || []).filter((x) => x.status !== 'verified')) await c.auth.mfa.unenroll({ factorId: f.id });
   const { data, error } = await c.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Guardián ' + new Date().toLocaleDateString('es-CO') });
   if (error) return { ok: false, error: friendlyError(error) };
-  return { ok: true, factorId: data.id, qr: data.totp.qr_code, secret: data.totp.secret };
+  return { ok: true, factorId: data.id, qr: data.totp.qr_code, uri: data.totp.uri, secret: data.totp.secret };
 }
 
 export async function mfaConfirm(factorId, code) {

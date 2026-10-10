@@ -119,16 +119,27 @@ async function paintMfa() {
   $('#mfaOn')?.addEventListener('click', async () => {
     const r = await mfaEnroll();
     if (!r.ok) return toast(r.error, 'err');
+    // El QR se dibuja aquí mismo a partir del enlace otpauth:// (la imagen de Supabase a veces no se ve)
+    let qrSvg = '';
+    if (typeof qrcode !== 'undefined' && r.uri) { const q = qrcode(0, 'M'); q.addData(r.uri); q.make(); qrSvg = q.createSvgTag({ cellSize: 5, margin: 2, scalable: true }); }
+    const secret = r.secret.replace(/(.{4})/g, '$1 ').trim();
+    const isPhone = /Android|iPhone|iPad/i.test(navigator.userAgent);
     $('#mfaArea').innerHTML = `
       <div class="mfa-box">
-        <div class="qr"><img alt="Código QR para la app autenticadora" src="${esc(r.qr)}"></div>
+        <div class="qr">${qrSvg || `<img alt="Código QR" src="${r.qr}">`}</div>
         <div class="stack">
-          <b>1. Escanea el QR</b><small class="muted">Con Google Authenticator, Microsoft Authenticator o similar. Si no puedes, escribe esta clave:</small>
-          <code>${esc(r.secret)}</code>
-          <b>2. Escribe el código de 6 dígitos</b>
-          <div class="row"><input class="input mono" id="mfaCode" inputmode="numeric" maxlength="6" style="width:140px;letter-spacing:.3em"><button class="btn primary sm" id="mfaVerify">Confirmar</button></div>
+          <b>1. Instala una app autenticadora en tu celular</b>
+          <small class="muted">Google Authenticator o Microsoft Authenticator (gratis en la tienda de apps). Esa app es la que te da los códigos de 6 dígitos; cambian cada 30 segundos.</small>
+          <b>2. En la app toca "+" → "Escanear código QR" y apunta a este QR</b>
+          <small class="muted">¿No puedes escanear? Elige "Ingresar clave de configuración" y escribe:</small>
+          <code style="font-size:14px;letter-spacing:.08em;color:var(--text)">${esc(secret)}</code>
+          <div class="row"><button class="btn sm ghost" id="mfaCopy">${icon('link')}Copiar clave</button>${isPhone ? `<a class="btn sm" href="${esc(r.uri)}">${icon('key')}Abrir en la app autenticadora</a>` : ''}</div>
+          <b>3. Escribe aquí el código de 6 dígitos que muestra la app</b>
+          <div class="row"><input class="input mono" id="mfaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" style="width:150px;letter-spacing:.3em;font-size:18px"><button class="btn primary sm" id="mfaVerify">${icon('check')}Confirmar</button></div>
         </div>
       </div>`;
+    $('#mfaCopy').onclick = async () => { try { await navigator.clipboard.writeText(r.secret); toast('Clave copiada', 'ok'); } catch { toast(r.secret); } };
+    $('#mfaCode').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6); if (e.target.value.length === 6) $('#mfaVerify').click(); });
     $('#mfaVerify').onclick = async () => {
       const v = await mfaConfirm(r.factorId, $('#mfaCode').value);
       if (!v.ok) return toast(v.error, 'err');
