@@ -1,0 +1,105 @@
+/* =========================================================
+   GUARDIÁN · Base
+   Estilo "estación de guardaparques": fondo casi negro, verde militar,
+   ámbar para acciones y rojo para alertas. Datos en letra monoespaciada.
+   Cambia los colores aquí y se actualiza toda la interfaz.
+   ========================================================= */
+:root {
+  /* Superficies */
+  --bg: #0a0d0b;
+  --bg-2: #0e1310;
+  --panel: #131a15;
+  --panel-2: #19221b;
+  --panel-3: #212c23;
+  --line: #2a362c;
+  --line-2: #3a4a3c;
+
+  /* Texto */
+  --text: #e4eadf;
+  --muted: #94a392;
+  --faint: #66745f;
+
+  /* Colores de la estación */
+  --olive: #8fb35a;      /* verde militar: avistamientos y estado OK */
+  --olive-2: #5f7d3a;
+  --amber: #e7a93b;      /* acciones principales */
+  --amber-ink: #241803;
+  --alert: #e5533d;      /* alertas */
+  --info: #5fb3c9;       /* datos y enlaces */
+  --violet: #a68be0;
+
+  /* Ficha de especie: lámina de guía de campo */
+  --paper: #efeadb;
+  --ink: #1b241d;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --gap: 16px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  --glow: 0 0 0 1px rgba(143, 179, 90, .25), 0 0 24px rgba(143, 179, 90, .12);
+
+  --font: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  --serif: "Fraunces", Georgia, "Times New Roman", serif;
+
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+
+  --sidebar-w: 248px;
+  --topbar-h: 64px;
+  --bottomnav-h: 68px;
+
+  color-scheme: dark;
+}
+
+/* Modo claro (se activa en Ajustes o con el botón del sol) */
+:root[data-theme="light"] {
+  --bg: #eef0e8;
+  --bg-2: #e6e9df;
+  --panel: #f8f9f4;
+  --panel-2: #eef1e7;
+  --panel-3: #e3e8da;
+  --line: #d3d9c8;
+  --line-2: #b9c3ab;
+  --text: #18201a;
+  --muted: #56634f;
+  --faint: #8a9584;
+  --olive: #557a2a;
+  --olive-2: #3f5d1d;
+  --amber: #c9861a;
+  --amber-ink: #fff8ea;
+  --alert: #c8361f;
+  --info: #23798f;
+  --shadow: 0 10px 30px rgba(30, 40, 20, .12);
+  --glow: 0 0 0 1px rgba(85, 122, 42, .25), 0 0 24px rgba(85, 122, 42, .08);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 400 15px/1.5 var(--font);
+  min-height: 100dvh;
+  overflow: hidden;            /* el desplazamiento ocurre dentro de cada vista */
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { margin: 0; line-height: 1.2; font-weight: 700; letter-spacing: -.01em; }
+p { margin: 0; }
+a { color: var(--info); }
+button, input, select, textarea { font: inherit; color: inherit; }
+img, video, canvas { max-width: 100%; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--olive) 40%, transparent); }
+.hidden { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.mono { font-family: var(--mono); font-feature-settings: "zero" 1; }
+.muted { color: var(--muted); }
+.serif { font-family: var(--serif); }
+
+/* Barras de desplazamiento discretas */
+* { scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 999px; border: 3px solid transparent; background-clip: padding-box; }
