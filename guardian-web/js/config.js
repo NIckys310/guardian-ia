@@ -7,8 +7,8 @@
    - La clave de Claude NO va aquí: está como secreto en Netlify.
    ========================================================= */
 export const CONFIG = {
-  supabaseUrl: '',
-  supabaseKey: '',
+  supabaseUrl: 'https://jktmtdpgvjlrdxqmdbrp.supabase.co',
+  supabaseKey: 'sb_publishable_Z33OvW2c8XZvI7G9AbgrRA_N4yqqYwi',
   functionsBase: '/.netlify/functions',
   appName: 'Guardián',
   inactividadMin: 30,          // cierre de sesión automático por inactividad
