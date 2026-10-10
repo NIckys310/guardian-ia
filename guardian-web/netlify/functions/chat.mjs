@@ -38,7 +38,7 @@ export default async (req) => {
 
   const who = await requireUser(req);
   if (who instanceof Response) return who;
-  if (await overLimit(who.token)) return json(429, { error: 'Llegaste al límite de consultas de IA por hora.' });
+  if (await overLimit(who.token, 'chat')) return json(429, { error: 'Llegaste al límite de mensajes de hoy. Con Guardián Pro tienes muchos más.', plan: true });
 
   let body;
   try { body = await req.json(); } catch { return json(400, { error: 'Solicitud inválida' }); }

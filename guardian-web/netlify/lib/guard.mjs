@@ -1,17 +1,16 @@
 /* =========================================================
    GUARDIÁN · Protección de las funciones del servidor
    - Exige una sesión válida de Supabase (si la nube está configurada)
-   - Limita las consultas de IA por hora y por cuenta
+   - Limita las consultas de IA por día según el plan (gratis o Pro)
    - Registra cada consulta en la tabla ai_requests
    Variables de entorno en Netlify:
      ANTHROPIC_API_KEY  (secreta)   · ANTHROPIC_MODEL (opcional)
-     SUPABASE_URL · SUPABASE_ANON_KEY · AI_LIMITE_HORA (opcional, 60)
+     SUPABASE_URL · SUPABASE_ANON_KEY  (los límites de IA dependen del plan)
    ========================================================= */
 export const MODEL = () => process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5';
 export const hasKey = () => Boolean(process.env.ANTHROPIC_API_KEY);
 const SB_URL = () => process.env.SUPABASE_URL;
 const SB_KEY = () => process.env.SUPABASE_ANON_KEY;
-const LIMIT = () => Number(process.env.AI_LIMITE_HORA || 60);
 
 export const json = (status, body, extra = {}) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...extra } });
@@ -36,14 +35,23 @@ async function rest(path, token, init = {}) {
   });
 }
 
-/* ¿La cuenta superó el límite de consultas por hora? */
-export async function overLimit(token) {
+/* ¿La cuenta ya usó todas las consultas de hoy según su plan (gratis o Pro)? */
+export async function overLimit(token, kind) {
   if (!token) return false;
   try {
-    const r = await rest('rpc/uso_ia_ultima_hora', token, { method: 'POST', body: '{}' });
+    const r = await rest('rpc/ia_permitida', token, { method: 'POST', body: JSON.stringify({ p_kind: kind }) });
     if (!r.ok) return false;
-    return (await r.json()) >= LIMIT();
+    return (await r.json()) === false;
   } catch { return false; }
+}
+
+/* Llama una función de la base de datos sin sesión (la función verifica todo por dentro) */
+export async function rpcAnon(name, body) {
+  return fetch(`${SB_URL()}/rest/v1/rpc/${name}`, {
+    method: 'POST',
+    headers: { apikey: SB_KEY(), 'content-type': 'application/json' },
+    body: JSON.stringify(body)
+  });
 }
 
 export async function logUsage(token, row) {

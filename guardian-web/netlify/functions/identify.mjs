@@ -44,14 +44,13 @@ export default async (req) => {
 
   const who = await requireUser(req);
   if (who instanceof Response) return who;
-  if (await overLimit(who.token)) return json(429, { error: 'Llegaste al límite de consultas de IA por hora.' });
-
   let body;
   try { body = await req.json(); } catch { return json(400, { error: 'Solicitud inválida' }); }
+  const kind = body.kind === 'auto' ? 'auto' : 'identify';
+  if (await overLimit(who.token, kind)) return json(429, { error: 'Llegaste al límite de consultas de hoy. Con Guardián Pro tienes muchas más.', plan: true });
   const image = typeof body.image === 'string' ? body.image : '';
   if (!image || !/^[A-Za-z0-9+/=]+$/.test(image.slice(0, 200))) return json(400, { error: 'Falta la imagen' });
   if (image.length > 2_000_000) return json(413, { error: 'La imagen es demasiado grande (máximo 1,5 MB).' });
-  const kind = body.kind === 'auto' ? 'auto' : 'identify';
 
   const client = new Anthropic();
   try {
