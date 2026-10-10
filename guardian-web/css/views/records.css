@@ -1,0 +1,53 @@
+/* =========================================================
+   GUARDIÁN · Registros, alertas y papelera
+   (listas con selección para eliminar uno, varios o todo)
+   ========================================================= */
+.records-toolbar { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-bottom: 12px; }
+.records-toolbar .search .icon-btn { pointer-events: none; }
+@media (max-width: 720px) { .records-toolbar { grid-template-columns: 1fr; } }
+
+.selection-bar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px 12px; margin-bottom: 12px; border-radius: var(--radius-sm);
+  background: var(--bg-2); border: 1px solid var(--line);
+  transition: border-color .25s var(--ease), background .25s var(--ease);
+}
+.selection-bar.has-sel { border-color: color-mix(in srgb, var(--amber) 55%, var(--line)); background: color-mix(in srgb, var(--amber) 6%, var(--bg-2)); }
+.selection-bar .spacer { flex: 1; }
+
+table.records td.sp b { display: block; }
+table.records td.sp small { color: var(--muted); font: italic 400 12.5px var(--serif); }
+table.records .thumb { cursor: zoom-in; }
+table.records tr.leaving { animation: toast-out .3s var(--ease) forwards; }
+.row-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.row-actions .icon-btn { width: 32px; height: 32px; }
+.row-actions .icon-btn svg { width: 16px; height: 16px; }
+.row-actions .icon-btn.del:hover { color: var(--alert); border-color: var(--alert); }
+
+/* ---------- Alertas ---------- */
+.alert-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: var(--gap); }
+.alert-card {
+  position: relative; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px;
+  padding: 12px; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--alert);
+  animation: rise .4s var(--ease) both;
+}
+.alert-card.done { border-left-color: var(--olive); opacity: .8; }
+.alert-card.selected { box-shadow: 0 0 0 2px var(--amber); }
+.alert-card .pic { position: relative; width: 150px; aspect-ratio: 4 / 3; border-radius: var(--radius-sm); overflow: hidden; background: var(--panel-3); cursor: zoom-in; }
+.alert-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.alert-card .pic .check { position: absolute; top: 6px; left: 6px; }
+.alert-card h4 { font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.alert-card p { color: var(--muted); font-size: 13.5px; margin-top: 4px; }
+.alert-card .meta { font: 500 11.5px var(--mono); color: var(--faint); margin-top: 6px; display: flex; gap: 12px; flex-wrap: wrap; }
+.alert-card .actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.alert-card:not(.done) .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--alert); animation: ping-red 1.4s infinite; }
+@media (max-width: 520px) { .alert-card { grid-template-columns: 1fr; } .alert-card .pic { width: 100%; } }
+
+/* ---------- Papelera ---------- */
+.trash-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.trash-head p { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.trash-head p svg { width: 16px; height: 16px; color: var(--info); }
+.type-tag { display: inline-flex; align-items: center; gap: 6px; font: 600 12px var(--mono); color: var(--muted); }
+.type-tag svg { width: 15px; height: 15px; }
+.days-left { font: 600 12px var(--mono); }
+.days-left.soon { color: var(--alert); }
