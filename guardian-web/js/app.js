@@ -114,6 +114,7 @@ export function go(name, first = false) {
   if (location.hash !== '#/' + name) history.replaceState(null, '', '#/' + name);
 }
 bus.on('nav:go', (v) => go(v));
+bus.on('toast', (m) => toast(m, 'warn'));
 addEventListener('hashchange', () => { if (started && !location.hash.startsWith('#/vincular')) go(currentFromHash()); });
 
 function setupNav() {
