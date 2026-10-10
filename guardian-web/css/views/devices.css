@@ -1,0 +1,42 @@
+/* =========================================================
+   GUARDIÁN · Dispositivos y vinculación del celular
+   ========================================================= */
+.steps { margin: 0 0 16px; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 10px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; color: var(--muted); font-size: 14px; }
+.steps li::before { content: counter(s); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--panel-3); color: var(--olive); font: 700 13px var(--mono); }
+.steps b { color: var(--text); }
+
+.pair-box { display: grid; place-items: center; gap: 12px; padding: 20px; border-radius: var(--radius); border: 1px dashed var(--line-2); background: var(--bg-2); min-height: 240px; text-align: center; }
+.pair-qr { position: relative; padding: 12px; background: #fff; border-radius: 14px; animation: pop-in .45s var(--ease-spring); }
+.pair-qr svg, .pair-qr img { display: block; width: 200px; height: 200px; }
+.pair-qr::after { content: ""; position: absolute; left: 12px; right: 12px; height: 2px; top: 12px; background: var(--olive); box-shadow: 0 0 12px var(--olive); animation: sweep 2s linear infinite alternate; --h: 200px; }
+.pair-code { font: 700 34px var(--mono); letter-spacing: .25em; color: var(--text); }
+.pair-timer { font: 600 12.5px var(--mono); color: var(--muted); }
+.pair-timer.soon { color: var(--alert); }
+.pair-ok { display: grid; gap: 8px; justify-items: center; animation: pop-in .4s var(--ease-spring); }
+.pair-ok .tick { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; background: var(--olive); color: #0d1407; }
+.pair-ok .tick svg { width: 32px; height: 32px; }
+
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 10px 16px; margin: 0; font-size: 14px; }
+.kv dt { color: var(--muted); font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: .06em; padding-top: 2px; }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+
+.dev-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.dev {
+  display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; gap: 12px; align-items: center;
+  padding: 12px; border-radius: var(--radius-sm); background: var(--bg-2); border: 1px solid var(--line);
+  animation: rise .35s var(--ease) both;
+}
+.dev .ico-box { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--panel-3); }
+.dev .ico-box svg { width: 22px; height: 22px; }
+.dev b { display: block; }
+.dev small { display: block; font: 500 11.5px var(--mono); color: var(--muted); }
+.dev .online { display: inline-flex; align-items: center; gap: 6px; font: 600 11.5px var(--mono); }
+.dev .online i { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+.dev .online.on { color: var(--olive); }
+.dev .online.on i { background: var(--olive); animation: ping 2s infinite; }
+.dev.revoked { opacity: .55; }
+
+.tips > div { padding: 14px; border-radius: var(--radius-sm); background: var(--bg-2); border: 1px solid var(--line); }
+.tips b { display: block; margin-bottom: 4px; }
+.tips p { font-size: 13.5px; }
