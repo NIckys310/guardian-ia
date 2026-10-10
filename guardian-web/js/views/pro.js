@@ -33,8 +33,8 @@ export async function show() {
 
 async function render() {
   const plans = await loadPlans();
-  const free = plans.find((p) => p.id === 'free') || { nombre: 'Guardián', precio_cop: 0, beneficios: [] };
-  const pro = plans.find((p) => p.id === 'pro') || { nombre: 'Guardián Pro', precio_cop: 14900, beneficios: [] };
+  const free = plans.find((p) => p.id === 'free') || { id: 'free', nombre: 'Guardián', precio_cop: 0, beneficios: ['IA local ilimitada (sin internet)', '20 consultas automáticas a Claude por día', '30 identificaciones avanzadas y 40 mensajes al asistente por día', 'Celulares vinculados, mapa, reportes y papelera'] };
+  const pro = plans.find((p) => p.id === 'pro') || { id: 'pro', nombre: 'Guardián Pro', precio_cop: 14900, beneficios: ['Todo lo del plan gratis', '300 consultas automáticas a Claude por día', '300 identificaciones avanzadas y 500 mensajes al asistente por día', 'Acceso primero a las nuevas actualizaciones', 'Soporte prioritario'] };
   const history = await paymentHistory();
   const u = plan.uso_hoy || {};
   const bar = (label, used, max) => `
