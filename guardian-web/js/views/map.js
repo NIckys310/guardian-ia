@@ -48,7 +48,7 @@ export function init() {
   });
   $('#btnMapFit').addEventListener('click', fitAll);
   $('#btnMapMe').addEventListener('click', () => {
-    if (geo.pos) map.flyTo([geo.pos.lat, geo.pos.lng], 15, { duration: 0.8 });
+    if (geo.pos) { map.flyTo([geo.pos.lat, geo.pos.lng], 15, { duration: 0.8 }); setTimeout(() => ripple(geo.pos.lat, geo.pos.lng, '#4aa3ff'), 850); }
     else bus.emit('toast', 'Activa la ubicación del navegador para ver dónde estás');
   });
   $('#btnMapLegend').addEventListener('click', () => $('#mapPanel').classList.toggle('open'));
@@ -66,7 +66,16 @@ export function init() {
 
 export function show() {
   if (!map) return;
-  setTimeout(() => map.invalidateSize(), 80);
+  setTimeout(() => {
+    map.invalidateSize();
+    // La primera vez, vuelo suave desde lejos hasta tus avistamientos
+    if (!introDone && document.documentElement.dataset.motion !== 'off') {
+      introDone = true;
+      const b = cluster.getBounds();
+      map.setZoom(Math.max(3, map.getZoom() - 3), { animate: false });
+      setTimeout(() => (b.isValid() ? map.flyToBounds(b, { padding: [60, 60], duration: 1.6, maxZoom: 13 }) : map.flyTo(map.getCenter(), map.getZoom() + 3, { duration: 1.4 })), 150);
+    }
+  }, 80);
 }
 
 const inRange = (r) => !rangeDays || ms(r.created_at) >= Date.now() - rangeDays * 864e5;
@@ -77,12 +86,14 @@ function draw() {
   const sightings = active('sighting').filter(inRange);
   const alerts = active('alert').filter(inRange);
   const markers = [];
+  let k = 0;
+  const seenNow = new Set();
   sightings.forEach((s) => {
     const g = s.grupo || findSpecies(s.species_id)?.grupo || 'mamifero';
     if (hidden.has(g)) return;
     const grp = groupOf(g);
     const m = L.marker([s.lat, s.lng], {
-      icon: L.divIcon({ className: 'pin', html: pinSVG(grp.color, grp.svg), iconSize: [38, 46], iconAnchor: [19, 45], popupAnchor: [0, -40] }),
+      icon: L.divIcon({ className: 'pin' + (fresh(s) ? ' fresh' : ''), html: animatedPin(grp.color, grp.svg, s.id, k++), iconSize: [38, 46], iconAnchor: [19, 45], popupAnchor: [0, -40] }),
       title: s.nombre, kind: 'sighting', rowId: s.id
     });
     m.bindPopup(popupHTML(s, grp), { maxWidth: 260 });
@@ -92,7 +103,7 @@ function draw() {
     alerts.forEach((a) => {
       const sp = MAP_SPECIAL.alerta;
       const m = L.marker([a.lat, a.lng], {
-        icon: L.divIcon({ className: 'pin' + (a.atendida ? '' : ' pending'), html: pinSVG(a.atendida ? '#7a8676' : sp.color, sp.svg), iconSize: [38, 46], iconAnchor: [19, 45], popupAnchor: [0, -40] }),
+        icon: L.divIcon({ className: 'pin' + (a.atendida ? '' : ' pending'), html: animatedPin(a.atendida ? '#7a8676' : sp.color, sp.svg, a.id, k++), iconSize: [38, 46], iconAnchor: [19, 45], popupAnchor: [0, -40] }),
         title: a.tipo, kind: 'alert', rowId: a.id, isAlert: !a.atendida, zIndexOffset: 1000
       });
       m.bindPopup(alertPopupHTML(a), { maxWidth: 260 });
@@ -101,6 +112,25 @@ function draw() {
   }
   cluster.addLayers(markers);
   renderLegend(sightings, alerts);
+  // Onda expansiva en lo que acaba de llegar (propio o de un celular)
+  [...sightings, ...alerts].forEach((r) => {
+    seenNow.add(r.id);
+    if (drawnOnce && !drawn.has(r.id) && fresh(r)) ripple(r.lat, r.lng, r.tipo ? '#e5533d' : groupOf(r.grupo).color);
+  });
+  drawn = seenNow; drawnOnce = true;
+}
+
+/* ---------- Animaciones del mapa ---------- */
+let drawn = new Set(), drawnOnce = false, introDone = false;
+const fresh = (r) => Date.now() - ms(r.created_at) < 60 * 60_000;   // última hora
+// Solo animan la caída los pines nuevos en pantalla (no en cada redibujo)
+function animatedPin(color, glyph, id, i) {
+  const anim = !drawn.has(id);
+  return `<div class="pin-wrap ${anim ? 'drop' : ''}" style="animation-delay:${anim ? Math.min(i, 40) * 25 : 0}ms">${pinSVG(color, glyph)}<span class="pin-shadow"></span></div>`;
+}
+function ripple(lat, lng, color) {
+  const m = L.marker([lat, lng], { interactive: false, icon: L.divIcon({ className: '', html: `<div class="map-ripple" style="--rc:${color}"><i></i><i></i><i></i></div>`, iconSize: [0, 0] }) }).addTo(map);
+  setTimeout(() => m.remove(), 3200);
 }
 
 function popupHTML(s, grp) {
@@ -156,6 +186,7 @@ function renderLegend(sightings, alerts) {
     ${item('dispositivo', MAP_SPECIAL.dispositivo, MAP_SPECIAL.dispositivo.descripcion, data.devices.filter((d) => d.last_lat).length, false)}
     ${item('yo', MAP_SPECIAL.yo, MAP_SPECIAL.yo.descripcion, null, false)}
     <div class="legend-item" style="cursor:default"><svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="rgba(231,169,59,.18)" stroke="#e7a93b" stroke-dasharray="4 3" stroke-width="2"/></svg><span><b>Distribución natural</b><small>Dónde vive la especie elegida</small></span><span></span></div>`;
+  $('#mapLegend').querySelectorAll('.legend-item').forEach((el, i) => el.style.setProperty('--li', i));
   $('#mapLegend').onclick = (e) => {
     const b = e.target.closest('[data-g]'); if (!b) return;
     const g = b.dataset.g;
@@ -187,7 +218,7 @@ function drawRange(sp) {
   if (!map || !sp) return;
   rangeLayer.clearLayers();
   if (!sp.zonas?.length) { bus.emit('toast', 'No hay datos de distribución para ' + sp.nombre); return; }
-  const circles = sp.zonas.map(([lat, lng, km]) => L.circle([lat, lng], { radius: km * 1000, color: '#e7a93b', weight: 2, dashArray: '6 6', fillColor: '#e7a93b', fillOpacity: 0.12 })
+  const circles = sp.zonas.map(([lat, lng, km]) => L.circle([lat, lng], { radius: km * 1000, color: '#e7a93b', weight: 2, dashArray: '6 6', fillColor: '#e7a93b', fillOpacity: 0.12, className: 'range-anim' })
     .bindTooltip(`Distribución de ${esc(sp.nombre)}`).addTo(rangeLayer));
   setTimeout(() => { map.invalidateSize(); map.flyToBounds(L.featureGroup(circles).getBounds(), { padding: [40, 40], duration: 0.9 }); }, 150);
 }
