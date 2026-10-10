@@ -1,0 +1,37 @@
+# =========================================================
+# GUARDIÁN · Configuración de Netlify
+# El sitio se publica desde la carpeta guardian-web del repositorio.
+# Cada commit en main se publica solo.
+# =========================================================
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  command = "npm install --omit=dev"
+
+[functions]
+  node_bundler = "esbuild"
+
+[dev]
+  port = 8888
+  autoLaunch = false
+
+# Seguridad del navegador
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(self), geolocation=(self), microphone=(), payment=(), usb=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Cross-Origin-Opener-Policy = "same-origin"
+
+# El service worker y el index siempre frescos (para recibir actualizaciones)
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
