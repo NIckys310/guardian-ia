@@ -1,44 +1,65 @@
-# Guardián · Vigilancia de fauna con IA
+# Guardián · Estación de fauna con IA
 
-## Cómo ejecutarlo
-1. Instala Visual Studio Code y la extensión **Live Server** (o usa Python).
-2. Abre la carpeta `guardian-web` en VS Code.
-3. Clic derecho sobre `index.html` → **Open with Live Server**.
-   - Alternativa sin VS Code: en una terminal dentro de la carpeta ejecuta `python -m http.server 8000`
-     y abre http://localhost:8000
-4. Acepta los permisos de cámara, ubicación y notificaciones.
+Aplicación web (instalable como app) para vigilar y conservar fauna: identifica animales con IA,
+registra avistamientos en un mapa, detecta posible caza furtiva, guarda reportes en el sistema y
+tiene un asistente con IA para resolver dudas.
 
-> La cámara solo funciona en `localhost` o en `https`. No abras el archivo con doble clic (file://).
-> Se necesita internet la primera vez para descargar los modelos de IA (unos 20 MB).
+## Secciones
+| Sección | Qué hace |
+|---|---|
+| Panel | Resumen del día: avistamientos, especies, alertas pendientes y dispositivos activos |
+| Escáner | Cámara del PC o del celular, cámara IP/dron o foto. La imagen se ajusta al visor; tócala para ampliarla |
+| Mapa | Un ícono y color por grupo de animales, guía de íconos, alertas, celulares y distribución natural |
+| Alertas | Posible caza furtiva: atender, ver en el mapa, eliminar una, varias o todas |
+| Estadísticas | Gráficas en vivo con filtros por rango y grupo |
+| Registros | Buscar y eliminar avistamientos uno a uno, por selección o todos (con Deshacer) |
+| Cápsula de reportes | Los reportes se guardan en el sistema (no se descargan) y se abren cuando quieras |
+| Asistente IA | Chat con Claude que conoce los datos de tu estación |
+| Dispositivos | Conectar un celular con un código QR (como Bluetooth, pero sin cables) |
+| Papelera | Recuperar lo eliminado durante 30 días o borrarlo para siempre |
+| Ajustes | Seguridad (2 pasos, contraseña, inactividad), tema, IA, alertas y datos |
 
-## Qué archivo cambiar
-| Quiero cambiar…                         | Archivo                         |
-|-----------------------------------------|---------------------------------|
-| Colores, tipografía, tamaños            | `css/styles.css` (bloque `:root`) |
-| Textos, botones, pestañas               | `index.html`                    |
-| Agregar o editar especies               | `js/species.js`                 |
-| Lógica de IA, alertas, mapa, reportes   | `js/app.js`                     |
-| Logo                                    | `assets/guardian.svg`           |
+## Estructura
+```
+guardian-web/
+├── index.html            estructura de todas las secciones
+├── css/                  base, estructura, componentes, animaciones y views/ (una hoja por sección)
+├── js/
+│   ├── app.js            arranque y navegación
+│   ├── config.js         URL y clave publishable de Supabase (vacías = modo local)
+│   ├── core/             utilidades, eventos y base de datos local (IndexedDB)
+│   ├── data/             especies (79, prioridad Colombia) y grupos con su ícono
+│   ├── services/         cuentas, datos, IA local, IA avanzada, GPS, alertas
+│   ├── ui/               íconos, avisos, ventanas, visor de imagen, gráficas
+│   └── views/            una por sección
+├── netlify/functions/    identify (Claude visión) y chat (asistente)
+├── supabase/migrations/  base de datos: 24 tablas con seguridad RLS
+└── sw.js                 funciona sin internet
+```
 
-## Conectar drones y otros dispositivos
-- **Dron o cámara por USB/HDMI**: con una capturadora o el control remoto conectado, aparece en la lista de cámaras.
-- **Cámara IP / celular**: instala "IP Webcam" (Android), copia la URL `http://IP:8080/video` y elige "Cámara IP / dron (URL)".
-- **Alertas automáticas a otros equipos**: en Ajustes pega una URL de webhook. Cada alerta se envía como JSON.
+## Cómo probarlo en el PC
+```bash
+npm install
+npx netlify-cli dev
+```
+Abre http://localhost:8888. Sin Netlify también funciona (sin IA avanzada): `python -m http.server 8000`.
 
-## IA avanzada (opcional)
-En Ajustes pega tu API key de https://console.anthropic.com. La clave queda guardada solo en tu navegador;
-para publicar la web en internet, mueve esa llamada a un servidor propio.
+## Nube (Supabase)
+1. Crea el proyecto en https://supabase.com y aplica las migraciones: `npx supabase link` y `npx supabase db push`.
+2. En **Authentication → Sign In / Providers** activa *Anonymous sign-ins* (para los celulares vinculados)
+   y en **Multi-Factor** activa *TOTP*.
+3. Copia la URL y la clave **publishable** en `js/config.js`. Nunca pongas la clave `service_role`.
 
-## Instalar Guardián como aplicación en cualquier PC
-1. Publica la carpeta en internet (gratis): entra a https://app.netlify.com/drop, crea una cuenta
-   y arrastra la carpeta `guardian-web`. Netlify te da una dirección como `https://guardian-xxxx.netlify.app`.
-   Puedes cambiarle el nombre en *Site configuration → Change site name*.
-2. Abre esa dirección en **Chrome** o **Edge**.
-3. Pulsa el botón **Instalar app** de la barra superior (o el ícono de instalar a la derecha de la barra de direcciones).
-4. Guardián aparece en el menú Inicio y en el escritorio con su logo, y abre en su propia ventana.
-5. En otra PC: abre la misma dirección y repite el paso 3.
+## IA avanzada (Claude)
+En Netlify → *Site configuration → Environment variables* agrega:
+- `ANTHROPIC_API_KEY` (secreta) · `ANTHROPIC_MODEL` (opcional, por defecto `claude-sonnet-5-5`)
+- `SUPABASE_URL` y `SUPABASE_ANON_KEY` (para comprobar la sesión) · `AI_LIMITE_HORA` (opcional, 60)
 
-Para desinstalar: abre la app → menú ⋮ de la ventana → *Desinstalar Guardián*.
+La clave nunca llega al navegador.
 
-Si cambias el código: vuelve a arrastrar la carpeta a Netlify (en *Deploys*) y sube la versión en `sw.js`
-(`guardian-v1` → `guardian-v2`). Las PCs que ya la instalaron se actualizan solas al abrirla.
+## Seguridad
+- Contraseñas de 10+ caracteres con mayúscula, minúscula, número y símbolo.
+- Bloqueo de 15 minutos tras 5 intentos fallidos.
+- Verificación en dos pasos (app autenticadora) y cierre por inactividad.
+- Reglas RLS: cada cuenta solo ve sus datos; los celulares vinculados trabajan para su cuenta principal.
+- Bitácora de auditoría de inicios de sesión y cambios de seguridad.
