@@ -32,7 +32,7 @@ export function init() {
     type: 'bar',
     data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 6, maxBarThickness: 26 }] },
     options: {
-      indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } },
+      animation: barStagger, indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } },
       scales: { x: { ticks: { precision: 0 }, grid: { color: cssVar('--line') } }, y: { grid: { display: false } } },
       onClick: (_, els) => { if (els[0]) { const id = charts.species.$ids[els[0].index]; speciesFilter = speciesFilter === id ? '' : id; render(); } }
     }
@@ -43,23 +43,42 @@ export function init() {
       { label: 'Avistamientos', data: [], borderColor: cssVar('--olive'), backgroundColor: hexA(cssVar('--olive'), .18), fill: true, tension: .35, pointRadius: 3 },
       { label: 'Alertas', data: [], borderColor: cssVar('--alert'), backgroundColor: hexA(cssVar('--alert'), .12), fill: true, tension: .35, pointRadius: 3 }
     ] },
-    options: { maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: cssVar('--line') } }, x: { grid: { display: false } } } }
+    options: { animations: lineDraw, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: cssVar('--line') } }, x: { grid: { display: false } } } }
   });
   charts.status = new Chart($('#chartStatus'), {
     type: 'doughnut',
     data: { labels: ['En peligro / crítico', 'Vulnerable / casi amenazado', 'Preocupación menor', 'Sin evaluar / doméstico'], datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#e5533d', '#e7a93b', '#8fb35a', '#7a8676'], borderWidth: 0, hoverOffset: 8 }] },
-    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'right' } } }
+    options: { animation: { animateRotate: true, animateScale: true, duration: 1200, easing: 'easeOutBack' }, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'right' } } }
   });
   charts.hours = new Chart($('#chartHours'), {
     type: 'bar',
     data: { labels: [...Array(24)].map((_, h) => `${h}h`), datasets: [{ label: 'Avistamientos', data: [], backgroundColor: cssVar('--info'), borderRadius: 4 }] },
-    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: cssVar('--line') } }, x: { grid: { display: false } } } }
+    options: { animation: barStagger, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: cssVar('--line') } }, x: { grid: { display: false } } } }
   });
   ['data:sightings', 'data:alerts'].forEach((ev) => bus.on(ev, () => { if ($('#view-estadisticas').classList.contains('active')) { render(); flash(); } }));
   bus.on('settings:change', () => { chartTheme(); Object.values(charts).forEach((c) => c.update('none')); });
 }
 
-export function show() { render(); }
+export function show() {
+  // Cada vez que entras a la sección, las gráficas se vuelven a dibujar animadas
+  Object.values(charts).forEach((c) => c.reset());
+  render();
+}
+
+/* ---------- Animaciones de las gráficas ---------- */
+const motion = () => document.documentElement.dataset.motion !== 'off';
+// Las barras crecen una tras otra
+const barStagger = {
+  duration: 800, easing: 'easeOutQuart',
+  delay: (ctx) => (motion() && ctx.type === 'data' && ctx.mode === 'default' ? ctx.dataIndex * 55 + ctx.datasetIndex * 120 : 0)
+};
+// La línea se dibuja de izquierda a derecha, punto por punto
+const lineDraw = {
+  x: { type: 'number', easing: 'linear', duration: 0, from: NaN, delay: (ctx) => (ctx.type === 'data' && motion() ? ctx.dataIndex * 70 : 0) },
+  y: { type: 'number', easing: 'easeOutQuart', duration: 700,
+    from: (ctx) => ctx.chart.scales.y?.getPixelForValue(0),
+    delay: (ctx) => (ctx.type === 'data' && motion() ? ctx.dataIndex * 70 + ctx.datasetIndex * 150 : 0) }
+};
 
 function hexA(hex, a) {
   const h = hex.replace('#', '');
@@ -113,8 +132,8 @@ function render() {
 
   const max = Math.max(1, ...groups.map((g) => g.n));
   $('#statsTableSub').textContent = `${groups.length} especies`;
-  $('#speciesTable').innerHTML = groups.length ? groups.map((g) => `
-    <tr data-sp="${esc(g.id)}" class="${speciesFilter === g.id ? 'selected' : ''}">
+  $('#speciesTable').innerHTML = groups.length ? groups.map((g, i) => `
+    <tr data-sp="${esc(g.id)}" class="row-in ${speciesFilter === g.id ? 'selected' : ''}" style="animation-delay:${Math.min(i, 15) * 35}ms">
       <td><div class="sp">${groupBadge(g.grupo, 26)}<div><b>${esc(g.nombre)}</b> <i>${esc(g.cientifico)}</i><span class="bar" style="width:${(g.n / max) * 100}%;background:${groupOf(g.grupo).color}"></span></div></div></td>
       <td>${esc(groupOf(g.grupo).nombre)}</td><td>${conservChip(g.estado)}</td>
       <td class="num">${g.n}</td><td class="num">${pct(g.max)}</td><td>${fmtRel(g.last)}</td>
