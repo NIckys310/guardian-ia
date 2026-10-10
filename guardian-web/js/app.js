@@ -17,6 +17,7 @@ import { loadData, resetData, active, trashed, data, outboxCount } from './servi
 import { loadModels } from './services/ai-local.js';
 import { checkClaude } from './services/ai-cloud.js';
 import { watchLocation } from './services/geo.js';
+import { reconnectBluetooth } from './services/bluetooth.js';
 import { showAuth, hideAuth } from './views/auth.js';
 import { showPairing } from './views/pair.js';
 
@@ -79,6 +80,7 @@ async function startApp() {
   go(currentFromHash(), true);
   await loadData();
   watchLocation();
+  reconnectBluetooth();
   // La IA pesa: se descarga cuando el navegador está libre
   (window.requestIdleCallback || ((f) => setTimeout(f, 800)))(() => loadModels());
   checkClaude().then(() => bus.emit('claude:status'));
