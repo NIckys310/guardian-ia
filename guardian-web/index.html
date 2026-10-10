@@ -1,182 +1,424 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Guardián · Vigilancia de fauna con IA</title>
+  <meta name="description" content="Estación de guardaparques: identifica fauna con IA, registra avistamientos y detecta posible caza furtiva.">
+  <meta name="theme-color" content="#0a0d0b">
   <link rel="icon" href="assets/guardian.svg" type="image/svg+xml">
   <link rel="icon" href="assets/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0f2a2e">
-  <meta name="description" content="Identifica animales con la cámara, registra avistamientos y detecta posible caza furtiva.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/views/auth.css">
+  <link rel="stylesheet" href="css/views/panel.css">
+  <link rel="stylesheet" href="css/views/scanner.css">
+  <link rel="stylesheet" href="css/views/map.css">
+  <link rel="stylesheet" href="css/views/stats.css">
+  <link rel="stylesheet" href="css/views/records.css">
+  <link rel="stylesheet" href="css/views/reports.css">
+  <link rel="stylesheet" href="css/views/chat.css">
+  <link rel="stylesheet" href="css/views/devices.css">
+  <link rel="stylesheet" href="css/views/settings.css">
 </head>
 <body>
 
-<header class="topbar">
-  <div class="brand">
-    <img src="assets/guardian.svg" alt="" width="40" height="40">
-    <div>
-      <h1>Guardián</h1>
-      <p>Vigilancia de fauna con IA</p>
+<!-- ============ PANTALLA DE CARGA ============ -->
+<div id="boot" class="boot">
+  <img src="assets/guardian.svg" alt="" width="72" height="72">
+  <div class="boot-bar"><i></i></div>
+  <span class="mono">Iniciando estación…</span>
+</div>
+
+<!-- ============ INICIO DE SESIÓN ============ -->
+<div id="authScreen" class="auth hidden" role="main"></div>
+
+<!-- ============ VINCULAR CELULAR (se abre desde el QR) ============ -->
+<div id="pairScreen" class="auth hidden" role="main"></div>
+
+<!-- ============ APLICACIÓN ============ -->
+<div id="shell" class="shell hidden">
+
+  <aside class="sidebar" aria-label="Menú principal">
+    <div class="brand">
+      <img src="assets/guardian.svg" alt="">
+      <div>
+        <h1>Guardián</h1>
+        <p>Estación de fauna</p>
+      </div>
     </div>
-  </div>
-  <nav class="tabs" aria-label="Secciones">
-    <button data-tab="scan" class="active">Escáner</button>
-    <button data-tab="map">Mapa</button>
-    <button data-tab="stats">Estadísticas</button>
-    <button data-tab="alerts">Alertas <span id="alertBadge" class="badge hidden">0</span></button>
-    <button data-tab="settings">Ajustes</button>
-  </nav>
-  <div id="status" class="status loading">Cargando IA…</div>
-  <button id="btnInstall" class="btn primary hidden">Instalar app</button>
-</header>
+    <nav id="nav">
+      <div class="nav-label">Operación</div>
+      <button class="nav-btn" data-view="panel"><i data-icon="panel"></i><span class="label">Panel</span></button>
+      <button class="nav-btn" data-view="escaner"><i data-icon="scan"></i><span class="label">Escáner</span></button>
+      <button class="nav-btn" data-view="mapa"><i data-icon="map"></i><span class="label">Mapa</span></button>
+      <button class="nav-btn" data-view="alertas"><i data-icon="bell"></i><span class="label">Alertas</span><span class="badge hidden" data-badge="alerts">0</span></button>
+      <div class="nav-label">Análisis</div>
+      <button class="nav-btn" data-view="estadisticas"><i data-icon="chart"></i><span class="label">Estadísticas</span></button>
+      <button class="nav-btn" data-view="registros"><i data-icon="list"></i><span class="label">Registros</span></button>
+      <button class="nav-btn" data-view="reportes"><i data-icon="capsule"></i><span class="label">Cápsula de reportes</span></button>
+      <button class="nav-btn" data-view="asistente"><i data-icon="spark"></i><span class="label">Asistente IA</span></button>
+      <div class="nav-label">Sistema</div>
+      <button class="nav-btn" data-view="dispositivos"><i data-icon="phone"></i><span class="label">Dispositivos</span></button>
+      <button class="nav-btn" data-view="papelera"><i data-icon="trash"></i><span class="label">Papelera</span><span class="badge hidden" data-badge="trash" style="background:var(--panel-3);color:var(--text)">0</span></button>
+      <button class="nav-btn" data-view="ajustes"><i data-icon="settings"></i><span class="label">Ajustes</span></button>
+    </nav>
+    <div class="sidebar-foot">
+      <button class="user-chip" id="userChip" aria-haspopup="menu">
+        <span class="avatar" id="userAvatar">G</span>
+        <span class="who"><b id="userName">—</b><small id="userRole">—</small></span>
+      </button>
+    </div>
+  </aside>
 
-<main>
-  <!-- ================= ESCÁNER ================= -->
-  <section id="tab-scan" class="tab active">
-    <div class="scan-grid">
-      <div class="viewer-col">
-        <div class="toolbar">
-          <select id="sourceSelect" aria-label="Fuente de video"></select>
-          <button id="btnStart" class="btn primary">Encender cámara</button>
-          <button id="btnStop" class="btn">Apagar</button>
-          <label class="btn file-btn">Subir foto<input type="file" id="fileInput" accept="image/*" hidden></label>
+  <header class="topbar">
+    <img class="mobile-brand" src="assets/guardian.svg" alt="">
+    <div class="page-title">
+      <span id="pageKicker">Operación</span>
+      <h2 id="pageTitle">Panel</h2>
+    </div>
+    <div class="spacer"></div>
+    <span class="status-pill hide-sm" id="netStatus" title="Conexión"><i></i><span>—</span></span>
+    <span class="status-pill loading" id="aiStatus" title="Estado de la IA"><i></i><span>IA…</span></span>
+    <button class="icon-btn" id="btnTheme" aria-label="Cambiar tema claro u oscuro"><i data-icon="moon"></i></button>
+    <button class="btn primary sm hidden hide-sm" id="btnInstall"><i data-icon="download"></i>Instalar app</button>
+  </header>
+
+  <main class="main" id="main">
+
+    <!-- ========== PANEL ========== -->
+    <section class="view" id="view-panel" data-title="Panel" data-kicker="Operación">
+      <div class="panel-hero reveal">
+        <div>
+          <span class="mono muted" id="heroDate">—</span>
+          <h3 id="heroHello">Hola</h3>
+          <p class="muted" id="heroSummary">Cargando el resumen de la estación…</p>
         </div>
-
-        <div id="ipcamRow" class="toolbar hidden">
-          <input id="ipcamUrl" type="url" placeholder="URL de cámara IP o dron (MJPEG), ej. http://192.168.1.50:8080/video">
-          <button id="btnIpcam" class="btn">Conectar</button>
+        <div class="row hero-actions">
+          <button class="btn primary" data-go="escaner"><i data-icon="scan"></i>Abrir escáner</button>
+          <button class="btn" data-go="dispositivos"><i data-icon="qr"></i>Conectar celular</button>
+          <button class="btn" data-go="asistente"><i data-icon="spark"></i>Preguntar a la IA</button>
         </div>
+      </div>
+      <div class="grid grid-4 kpis">
+        <div class="card kpi reveal" style="--c:var(--olive)"><span class="kpi-label"><i></i>Avistamientos hoy</span><b class="kpi-value" data-kpi="today">0</b><span class="kpi-foot" data-kpi-foot="today">—</span></div>
+        <div class="card kpi reveal" style="--c:var(--info)"><span class="kpi-label"><i></i>Especies registradas</span><b class="kpi-value" data-kpi="species">0</b><span class="kpi-foot" data-kpi-foot="species">—</span></div>
+        <div class="card kpi reveal" style="--c:var(--alert)"><span class="kpi-label"><i></i>Alertas pendientes</span><b class="kpi-value" data-kpi="pending">0</b><span class="kpi-foot" data-kpi-foot="pending">—</span></div>
+        <div class="card kpi reveal" style="--c:var(--amber)"><span class="kpi-label"><i></i>Dispositivos activos</span><b class="kpi-value" data-kpi="devices">0</b><span class="kpi-foot" data-kpi-foot="devices">—</span></div>
+      </div>
+      <div class="grid grid-2 collapse-md" style="margin-top:var(--gap)">
+        <div class="card reveal">
+          <div class="card-head"><h4><i data-icon="activity"></i>Actividad · últimos 7 días</h4><span class="sub">en vivo</span></div>
+          <div class="chart-box sm"><canvas id="panelChart"></canvas></div>
+        </div>
+        <div class="card reveal">
+          <div class="card-head"><h4><i data-icon="bell"></i>Últimas alertas</h4><button class="btn sm ghost" data-go="alertas">Ver todas</button></div>
+          <div id="panelAlerts" class="mini-list"></div>
+        </div>
+        <div class="card reveal">
+          <div class="card-head"><h4><i data-icon="paw"></i>Último avistamiento</h4><button class="btn sm ghost" data-go="registros">Registros</button></div>
+          <div id="panelLast"></div>
+        </div>
+        <div class="card reveal">
+          <div class="card-head"><h4><i data-icon="shield"></i>Especies amenazadas vistas</h4><span class="sub">UICN</span></div>
+          <div id="panelThreatened" class="mini-list"></div>
+        </div>
+      </div>
+    </section>
 
-        <div class="viewer" id="viewer">
-          <video id="video" autoplay playsinline muted class="hidden"></video>
-          <img id="photo" alt="Foto a analizar" class="hidden">
-          <img id="ipcam" alt="Transmisión de cámara remota" class="hidden" crossorigin="anonymous">
-          <canvas id="overlay"></canvas>
-          <div class="placeholder" id="placeholder">
-            <strong>Apunta la cámara a un animal</strong>
-            <span>o sube una foto. La IA lo identifica y registra el avistamiento.</span>
+    <!-- ========== ESCÁNER ========== -->
+    <section class="view" id="view-escaner" data-title="Escáner" data-kicker="Operación">
+      <div class="grid grid-2 collapse-md scan-grid">
+        <section class="card viewer-card reveal">
+          <div class="card-head">
+            <h4><i data-icon="camera"></i>Visor</h4>
+            <div class="row"><span class="chip" id="srcChip"><i></i>Sin fuente</span><span class="chip mono" id="msChip">— ms</span></div>
+          </div>
+          <div class="toolbar">
+            <select class="input" id="sourceSelect" aria-label="Fuente de video"></select>
+            <button class="btn primary" id="btnStart"><i data-icon="play"></i>Encender</button>
+            <button class="btn" id="btnStop"><i data-icon="stop"></i>Apagar</button>
+            <label class="btn" for="fileInput"><i data-icon="upload"></i>Subir foto</label>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+          </div>
+          <div class="toolbar hidden" id="ipcamRow">
+            <input class="input" id="ipcamUrl" type="url" placeholder="URL de cámara IP o dron (MJPEG), ej. http://192.168.1.50:8080/video">
+            <button class="btn" id="btnIpcam"><i data-icon="link"></i>Conectar</button>
+          </div>
+          <div class="viewer" id="viewer" tabindex="0" aria-label="Imagen analizada. Toca para ampliar.">
+            <div class="stage" id="stage">
+              <video id="video" autoplay playsinline muted class="hidden"></video>
+              <img id="photo" alt="Foto a analizar" class="hidden">
+              <img id="ipcam" alt="Transmisión de cámara remota" class="hidden" crossorigin="anonymous">
+              <canvas id="overlay"></canvas>
+              <div class="scanline"></div>
+            </div>
+            <div class="reticle"><i></i><i></i><i></i><i></i></div>
+            <div class="hud mono"><span id="hudTime">--:--:--</span><span id="hudCoords">sin GPS</span></div>
+            <button class="icon-btn viewer-expand" id="btnExpand" aria-label="Ampliar imagen"><i data-icon="expand"></i></button>
+            <div class="placeholder" id="placeholder">
+              <div class="radar"><i></i></div>
+              <strong>Apunta la cámara a un animal</strong>
+              <span>o sube una foto. La IA lo identifica y registra el avistamiento.</span>
+            </div>
+          </div>
+          <div class="toolbar">
+            <button class="btn olive" id="btnSnap"><i data-icon="scan"></i>Analizar ahora</button>
+            <button class="btn" id="btnClaude"><i data-icon="spark"></i>IA avanzada</button>
+          </div>
+          <div class="switches">
+            <label class="switch"><span>Escaneo automático<small>Analiza la cámara sin tocar nada</small></span><input type="checkbox" id="autoScan"></label>
+            <label class="switch danger"><span>Zona protegida<small>Alerta si aparecen personas, vehículos o armas</small></span><input type="checkbox" id="protectedMode"></label>
+          </div>
+          <div id="predictions" class="preds" aria-live="polite"></div>
+        </section>
+
+        <aside class="card plate-card reveal" id="infoPanel" aria-live="polite">
+          <div class="empty">
+            <i data-icon="leaf"></i>
+            <strong>Ficha de especie</strong>
+            <span>Cuando la IA reconozca un animal verás aquí su hábitat, cómo se reproduce, qué come y dónde vive.</span>
+          </div>
+        </aside>
+      </div>
+      <section class="card reveal" style="margin-top:var(--gap)">
+        <div class="card-head"><h4><i data-icon="image"></i>Capturas recientes</h4><button class="btn sm ghost" data-go="registros">Ver registros</button></div>
+        <div class="captures" id="captures"></div>
+      </section>
+    </section>
+
+    <!-- ========== MAPA ========== -->
+    <section class="view view-flush" id="view-mapa" data-title="Mapa" data-kicker="Operación">
+      <div class="map-layout">
+        <div id="map" aria-label="Mapa de avistamientos y alertas"></div>
+        <aside class="map-panel" id="mapPanel">
+          <div class="card-head"><h4><i data-icon="layers"></i>Guía de íconos</h4><button class="icon-btn sm-only" id="btnMapPanelClose" aria-label="Cerrar guía"><i data-icon="x"></i></button></div>
+          <div class="segmented" id="mapRange" role="tablist">
+            <button data-r="1">24 h</button><button data-r="7">7 días</button><button data-r="30" class="active">30 días</button><button data-r="0">Todo</button>
+          </div>
+          <div id="mapLegend" class="legend-list"></div>
+          <details class="howto">
+            <summary><i data-icon="info"></i>¿Cómo funciona el mapa?</summary>
+            <ul>
+              <li>Cada avistamiento se dibuja con el <b>ícono y el color de su grupo</b> (felinos, aves, reptiles…).</li>
+              <li>Toca un grupo de la guía para <b>mostrarlo u ocultarlo</b>.</li>
+              <li>Cuando hay muchos puntos juntos se agrupan en un círculo con el número; acércate para separarlos.</li>
+              <li>Las <b>alertas</b> son triángulos rojos que laten mientras están pendientes.</li>
+              <li>Los círculos punteados muestran la <b>distribución natural</b> de la especie que elijas.</li>
+              <li>Toca cualquier ícono para ver la foto, la fecha y la confianza de la IA.</li>
+            </ul>
+          </details>
+        </aside>
+        <div class="map-fabs">
+          <button class="icon-btn" id="btnMapLegend" aria-label="Guía de íconos"><i data-icon="layers"></i></button>
+          <button class="icon-btn" id="btnMapFit" aria-label="Ver todos los puntos"><i data-icon="expand"></i></button>
+          <button class="icon-btn" id="btnMapMe" aria-label="Mi ubicación"><i data-icon="crosshair"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== ESTADÍSTICAS ========== -->
+    <section class="view" id="view-estadisticas" data-title="Estadísticas" data-kicker="Análisis">
+      <div class="view-head reveal">
+        <div class="segmented" id="statsRange"><button data-r="1">24 h</button><button data-r="7" class="active">7 días</button><button data-r="30">30 días</button><button data-r="365">1 año</button><button data-r="0">Todo</button></div>
+        <div class="row">
+          <select class="input" id="statsGroup" aria-label="Filtrar por grupo"><option value="">Todos los grupos</option></select>
+          <span class="chip ok" id="statsLive"><i></i>En vivo</span>
+        </div>
+      </div>
+      <div class="grid grid-4 kpis">
+        <div class="card kpi reveal" style="--c:var(--olive)"><span class="kpi-label"><i></i>Avistamientos</span><b class="kpi-value" data-s="total">0</b><span class="kpi-foot" data-sf="total">—</span></div>
+        <div class="card kpi reveal" style="--c:var(--info)"><span class="kpi-label"><i></i>Especies distintas</span><b class="kpi-value" data-s="species">0</b><span class="kpi-foot" data-sf="species">—</span></div>
+        <div class="card kpi reveal" style="--c:var(--amber)"><span class="kpi-label"><i></i>De especies amenazadas</span><b class="kpi-value" data-s="threat">0</b><span class="kpi-foot" data-sf="threat">—</span></div>
+        <div class="card kpi reveal" style="--c:var(--alert)"><span class="kpi-label"><i></i>Alertas</span><b class="kpi-value" data-s="alerts">0</b><span class="kpi-foot" data-sf="alerts">—</span></div>
+      </div>
+      <div class="grid grid-2 collapse-md" style="margin-top:var(--gap)">
+        <div class="card reveal"><div class="card-head"><h4><i data-icon="paw"></i>Avistamientos por especie</h4><span class="sub">toca una barra</span></div><div class="chart-box"><canvas id="chartSpecies"></canvas></div></div>
+        <div class="card reveal"><div class="card-head"><h4><i data-icon="activity"></i>Actividad en el tiempo</h4><span class="sub" id="chartDaysSub">por día</span></div><div class="chart-box"><canvas id="chartDays"></canvas></div></div>
+        <div class="card reveal"><div class="card-head"><h4><i data-icon="shield"></i>Estado de conservación</h4><span class="sub">UICN</span></div><div class="chart-box"><canvas id="chartStatus"></canvas></div></div>
+        <div class="card reveal"><div class="card-head"><h4><i data-icon="clock"></i>Horas de mayor actividad</h4><span class="sub">0 a 23 h</span></div><div class="chart-box"><canvas id="chartHours"></canvas></div></div>
+      </div>
+      <div class="card reveal" style="margin-top:var(--gap)">
+        <div class="card-head"><h4><i data-icon="list"></i>Detalle por especie</h4><span class="sub" id="statsTableSub">—</span></div>
+        <div class="table-wrap"><table class="data"><thead><tr><th>Especie</th><th>Grupo</th><th>Estado</th><th class="num">Avist.</th><th class="num">Conf. máx.</th><th>Último</th></tr></thead><tbody id="speciesTable"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- ========== REGISTROS ========== -->
+    <section class="view" id="view-registros" data-title="Registros" data-kicker="Análisis">
+      <div class="card reveal">
+        <div class="records-toolbar">
+          <div class="input-wrap search"><input class="input" id="recSearch" type="search" placeholder="Buscar especie, fuente o dispositivo…" aria-label="Buscar"><span class="icon-btn" aria-hidden="true"><i data-icon="search"></i></span></div>
+          <select class="input" id="recSpecies" aria-label="Filtrar por especie"><option value="">Todas las especies</option></select>
+          <select class="input" id="recRange" aria-label="Filtrar por fecha"><option value="0">Todas las fechas</option><option value="1">Últimas 24 h</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option></select>
+        </div>
+        <div class="selection-bar" id="recSelBar">
+          <span class="mono" id="recCount">0 registros</span>
+          <span class="spacer"></span>
+          <button class="btn sm danger" id="recDeleteSel" disabled><i data-icon="trash"></i>Eliminar seleccionados</button>
+          <button class="btn sm danger" id="recDeleteAll"><i data-icon="trash"></i>Eliminar todo</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data records">
+            <thead><tr><th style="width:36px"><input type="checkbox" class="check" id="recAll" aria-label="Seleccionar todos"></th><th>Foto</th><th>Especie</th><th>Fecha</th><th class="num">Conf.</th><th>Fuente</th><th>Ubicación</th><th></th></tr></thead>
+            <tbody id="recBody"></tbody>
+          </table>
+        </div>
+        <div class="row" style="justify-content:center;margin-top:12px"><button class="btn sm hidden" id="recMore">Mostrar más</button></div>
+      </div>
+    </section>
+
+    <!-- ========== ALERTAS ========== -->
+    <section class="view" id="view-alertas" data-title="Alertas" data-kicker="Operación">
+      <div class="view-head reveal">
+        <div class="segmented" id="alertFilter"><button data-f="pending" class="active">Pendientes</button><button data-f="done">Atendidas</button><button data-f="all">Todas</button></div>
+        <div class="row">
+          <button class="btn sm" id="btnSimulate"><i data-icon="alert"></i>Simular alerta</button>
+          <button class="btn sm danger" id="alertDeleteSel" disabled><i data-icon="trash"></i>Eliminar seleccionadas</button>
+          <button class="btn sm danger" id="alertDeleteAll"><i data-icon="trash"></i>Eliminar todas</button>
+        </div>
+      </div>
+      <div id="alertList" class="alert-list"></div>
+    </section>
+
+    <!-- ========== CÁPSULA DE REPORTES ========== -->
+    <section class="view" id="view-reportes" data-title="Cápsula de reportes" data-kicker="Análisis">
+      <div class="grid grid-2 collapse-md reports-grid">
+        <div class="card reveal">
+          <div class="card-head"><h4><i data-icon="report"></i>Nuevo reporte ambiental</h4><span class="sub">se guarda en el sistema</span></div>
+          <div class="stack">
+            <label class="field">Título<input class="input" id="repTitle" maxlength="120" placeholder="Reporte semanal · Reserva…"></label>
+            <div class="grid grid-2">
+              <label class="field">Desde<input class="input" id="repFrom" type="date"></label>
+              <label class="field">Hasta<input class="input" id="repTo" type="date"></label>
+            </div>
+            <div class="row" id="repPresets">
+              <button class="btn sm" data-p="1">Hoy</button><button class="btn sm" data-p="7">7 días</button><button class="btn sm" data-p="30">30 días</button><button class="btn sm" data-p="m">Este mes</button>
+            </div>
+            <label class="field">Notas del guardaparques<textarea class="input" id="repNotes" maxlength="2000" placeholder="Observaciones, clima, recorridos…"></textarea></label>
+            <div class="rep-preview" id="repPreview"></div>
+            <button class="btn primary lg" id="btnSaveReport"><i data-icon="capsule"></i>Guardar en la cápsula</button>
           </div>
         </div>
-
-        <div class="toolbar">
-          <button id="btnSnap" class="btn primary">Analizar ahora</button>
-          <button id="btnClaude" class="btn">Identificar con IA avanzada</button>
-          <label class="check"><input type="checkbox" id="autoScan" checked> Escaneo automático</label>
-          <label class="check danger"><input type="checkbox" id="protectedMode"> Zona protegida (detectar personas y vehículos)</label>
-        </div>
-        <div id="predictions" class="preds" aria-live="polite"></div>
-      </div>
-
-      <aside class="info" id="infoPanel" aria-live="polite">
-        <div class="empty">
-          <h2>Ficha de especie</h2>
-          <p>Cuando la IA reconozca un animal verás aquí su hábitat, cómo se reproduce, qué come y dónde vive.</p>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <!-- ================= MAPA ================= -->
-  <section id="tab-map" class="tab">
-    <div class="map-wrap">
-      <div id="map"></div>
-      <div class="legend">
-        <span><i class="dot ok"></i>Avistamiento</span>
-        <span><i class="dot bad"></i>Alerta</span>
-        <span><i class="dot range"></i>Distribución de la especie</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= ESTADÍSTICAS ================= -->
-  <section id="tab-stats" class="tab">
-    <div class="counters">
-      <div><b id="cTotal">0</b><span>avistamientos</span></div>
-      <div><b id="cSpecies">0</b><span>especies distintas</span></div>
-      <div><b id="cThreat">0</b><span>avistamientos de especies amenazadas</span></div>
-      <div><b id="cAlerts">0</b><span>alertas</span></div>
-    </div>
-    <div class="stats-grid">
-      <div class="card"><h3>Avistamientos por especie</h3><div class="chart-box"><canvas id="chartSpecies"></canvas></div></div>
-      <div class="card"><h3>Actividad de los últimos 7 días</h3><div class="chart-box"><canvas id="chartDays"></canvas></div></div>
-    </div>
-    <div class="card">
-      <div class="card-head">
-        <h3>Detalle por especie</h3>
-        <div class="row">
-          <button id="btnReport" class="btn primary">Generar reporte ambiental</button>
-          <button id="btnCsv" class="btn">Exportar CSV</button>
-          <button id="btnJson" class="btn">Exportar JSON</button>
+        <div class="card reveal">
+          <div class="card-head"><h4><i data-icon="capsule"></i>Reportes guardados</h4><span class="sub" id="repCount">0</span></div>
+          <div class="capsule-timeline" id="repList"></div>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Especie</th><th>Estado de conservación</th><th>Avistamientos</th><th>Confianza máx.</th><th>Último</th></tr></thead>
-          <tbody id="speciesTable"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ================= ALERTAS ================= -->
-  <section id="tab-alerts" class="tab">
-    <div class="card-head">
-      <h2>Alertas de posible caza furtiva</h2>
-      <div class="row">
-        <button id="btnSimulate" class="btn">Simular alerta</button>
-        <button id="btnAlertsCsv" class="btn">Exportar alertas</button>
+    <!-- ========== ASISTENTE IA ========== -->
+    <section class="view view-flush" id="view-asistente" data-title="Asistente IA" data-kicker="Análisis">
+      <div class="chat-layout">
+        <aside class="chat-side">
+          <button class="btn primary block" id="chatNew"><i data-icon="plus"></i>Nueva conversación</button>
+          <div class="chat-convs" id="chatConvs"></div>
+        </aside>
+        <section class="chat-main">
+          <header class="chat-head">
+            <button class="icon-btn sm-only" id="chatBack" aria-label="Conversaciones"><i data-icon="menu"></i></button>
+            <div><b id="chatTitle">Guardián IA</b><small class="mono muted" id="chatModel">Claude</small></div>
+            <span class="spacer"></span>
+            <span class="chip" id="chatStatus"><i></i>—</span>
+          </header>
+          <div class="chat-msgs" id="chatMsgs" aria-live="polite"></div>
+          <div class="chat-suggest" id="chatSuggest"></div>
+          <form class="chat-composer" id="chatForm">
+            <textarea class="input" id="chatInput" rows="1" maxlength="4000" placeholder="Pregunta sobre fauna, tus avistamientos o qué hacer ante una alerta…" aria-label="Mensaje"></textarea>
+            <button class="btn primary" id="chatSend" type="submit" aria-label="Enviar"><i data-icon="send"></i></button>
+          </form>
+        </section>
       </div>
-    </div>
-    <div id="alertList" class="alert-list"></div>
-  </section>
+    </section>
 
-  <!-- ================= AJUSTES ================= -->
-  <section id="tab-settings" class="tab">
-    <div class="settings">
-      <div class="card">
-        <h3>Conexión con otros dispositivos</h3>
-        <p class="hint">Cada alerta se envía como JSON a esta dirección. Sirve para un servidor, un bot de Telegram, un dron con API o la app del celular.</p>
-        <label>URL de webhook<input id="setWebhook" type="url" placeholder="https://mi-servidor.com/alertas"></label>
-        <button id="btnTestHook" class="btn">Enviar alerta de prueba</button>
+    <!-- ========== DISPOSITIVOS ========== -->
+    <section class="view" id="view-dispositivos" data-title="Dispositivos" data-kicker="Sistema">
+      <div class="grid grid-2 collapse-md">
+        <div class="card reveal pair-card">
+          <div class="card-head"><h4><i data-icon="qr"></i>Conectar un celular</h4><span class="sub">como Bluetooth, pero por QR</span></div>
+          <ol class="steps">
+            <li><b>Toca "Generar código"</b> en este computador.</li>
+            <li><b>Escanea el QR</b> con la cámara del celular (o escribe el código).</li>
+            <li><b>Listo:</b> las fotos y los animales que reconozca el celular llegan aquí al instante.</li>
+          </ol>
+          <div class="pair-box" id="pairBox">
+            <button class="btn primary lg" id="btnPair"><i data-icon="qr"></i>Generar código</button>
+          </div>
+        </div>
+        <div class="card reveal">
+          <div class="card-head"><h4><i data-icon="wifi"></i>Este equipo</h4><span class="chip" id="thisDeviceChip"><i></i>—</span></div>
+          <dl class="kv" id="thisDevice"></dl>
+        </div>
       </div>
-      <div class="card">
-        <h3>IA avanzada (Claude)</h3>
-        <p class="hint">Opcional. Identifica cualquier especie y genera su ficha. La clave se guarda solo en este navegador.</p>
-        <label>API key de Anthropic<input id="setKey" type="password" placeholder="sk-ant-..."></label>
-        <label>Modelo<input id="setModel" type="text"></label>
+      <div class="card reveal" style="margin-top:var(--gap)">
+        <div class="card-head"><h4><i data-icon="phone"></i>Dispositivos vinculados</h4><span class="sub" id="devCount">0</span></div>
+        <div id="devList"></div>
       </div>
-      <div class="card">
-        <h3>Reconocimiento</h3>
-        <label>Confianza mínima: <b id="confVal">30%</b><input id="setConf" type="range" min="0.1" max="0.9" step="0.05"></label>
-        <label class="check"><input id="setNotify" type="checkbox"> Notificaciones del sistema</label>
-        <label class="check"><input id="setSound" type="checkbox"> Sonido de alerta</label>
+      <div class="card reveal" style="margin-top:var(--gap)">
+        <div class="card-head"><h4><i data-icon="camera"></i>Otras cámaras</h4></div>
+        <div class="grid grid-3 tips">
+          <div><b>Dron o cámara USB/HDMI</b><p class="muted">Conéctalo con una capturadora: aparece en la lista de cámaras del Escáner.</p></div>
+          <div><b>Cámara IP</b><p class="muted">Elige "Cámara IP / dron (URL)" en el Escáner y pega la dirección MJPEG.</p></div>
+          <div><b>Celular como cámara fija</b><p class="muted">Vincúlalo con el QR y déjalo en "Escaneo automático": enviará cada animal que vea.</p></div>
+        </div>
       </div>
-      <div class="card">
-        <h3>Datos</h3>
-        <p class="hint">Los avistamientos y alertas se guardan en este navegador.</p>
-        <button id="btnClear" class="btn danger-btn">Borrar todos los datos</button>
-      </div>
-    </div>
-  </section>
-</main>
+    </section>
 
-<div id="toasts" class="toasts" aria-live="assertive"></div>
+    <!-- ========== PAPELERA ========== -->
+    <section class="view" id="view-papelera" data-title="Papelera" data-kicker="Sistema">
+      <div class="card reveal">
+        <div class="trash-head">
+          <div class="segmented" id="trashFilter"><button data-t="" class="active">Todo</button><button data-t="sighting">Avistamientos</button><button data-t="alert">Alertas</button><button data-t="report">Reportes</button><button data-t="conversation">Chats</button></div>
+          <p class="muted"><i data-icon="info"></i> Lo que eliminas llega aquí. Puedes recuperarlo durante 30 días; después se borra solo.</p>
+        </div>
+        <div class="selection-bar">
+          <span class="mono" id="trashCount">0 elementos</span>
+          <span class="spacer"></span>
+          <button class="btn sm olive" id="trashRestoreSel" disabled><i data-icon="restore"></i>Recuperar seleccionados</button>
+          <button class="btn sm" id="trashRestoreAll"><i data-icon="restore"></i>Recuperar todo</button>
+          <button class="btn sm danger" id="trashPurgeSel" disabled><i data-icon="trash"></i>Borrar para siempre</button>
+          <button class="btn sm danger solid" id="trashEmpty"><i data-icon="trash"></i>Vaciar papelera</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data"><thead><tr><th style="width:36px"><input type="checkbox" class="check" id="trashAll" aria-label="Seleccionar todos"></th><th>Tipo</th><th>Elemento</th><th>Creado</th><th>Eliminado</th><th>Se borra en</th><th></th></tr></thead><tbody id="trashBody"></tbody></table>
+        </div>
+      </div>
+    </section>
 
-<!-- Librerías -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<!-- App -->
-<script src="js/species.js"></script>
-<script src="js/app.js"></script>
+    <!-- ========== AJUSTES ========== -->
+    <section class="view" id="view-ajustes" data-title="Ajustes" data-kicker="Sistema">
+      <div class="grid grid-2 collapse-md settings-grid" id="settingsGrid"></div>
+    </section>
+
+  </main>
+
+  <!-- Navegación inferior (celular) -->
+  <nav class="bottomnav" aria-label="Navegación">
+    <button data-view="panel"><i data-icon="panel"></i>Panel</button>
+    <button data-view="escaner"><i data-icon="scan"></i>Escáner</button>
+    <button data-view="mapa"><i data-icon="map"></i>Mapa</button>
+    <button data-view="alertas"><i data-icon="bell"></i>Alertas<span class="badge hidden" data-badge="alerts">0</span></button>
+    <button data-more><i data-icon="more"></i>Más</button>
+  </nav>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<!-- Librerías ligeras (la IA se descarga sola en segundo plano) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" defer></script>
+<script type="module" src="js/app.js"></script>
 </body>
 </html>
