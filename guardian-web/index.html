@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="css/views/chat.css">
   <link rel="stylesheet" href="css/views/devices.css">
   <link rel="stylesheet" href="css/views/settings.css">
+  <link rel="stylesheet" href="css/views/pro.css">
 </head>
 <body>
 
@@ -92,6 +93,7 @@
       <div class="nav-label">Sistema</div>
       <button class="nav-btn" data-view="dispositivos"><i data-icon="phone"></i><span class="label">Dispositivos</span></button>
       <button class="nav-btn" data-view="papelera"><i data-icon="trash"></i><span class="label">Papelera</span><span class="badge hidden" data-badge="trash" style="background:var(--panel-3);color:var(--text)">0</span></button>
+      <button class="nav-btn" data-view="pro"><i data-icon="spark"></i><span class="label">Guardián Pro</span></button>
       <button class="nav-btn" data-view="ajustes"><i data-icon="settings"></i><span class="label">Ajustes</span></button>
     </nav>
     <div class="sidebar-foot">
@@ -414,6 +416,12 @@
           <table class="data"><thead><tr><th style="width:36px"><input type="checkbox" class="check" id="trashAll" aria-label="Seleccionar todos"></th><th>Tipo</th><th>Elemento</th><th>Creado</th><th>Eliminado</th><th>Se borra en</th><th></th></tr></thead><tbody id="trashBody"></tbody></table>
         </div>
       </div>
+    </section>
+
+    <!-- ========== GUARDIÁN PRO ========== -->
+    <section class="view" id="view-pro" data-title="Guardián Pro" data-kicker="Sistema">
+      <div class="view-head reveal"><div><h3>Más IA para tu estación</h3><p>Apoya la conservación y desbloquea muchas más consultas a la IA avanzada.</p></div></div>
+      <div id="proBody"></div>
     </section>
 
     <!-- ========== AJUSTES ========== -->

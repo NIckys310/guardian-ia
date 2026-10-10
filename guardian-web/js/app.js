@@ -32,8 +32,10 @@ import * as asistente from './views/chat.js';
 import * as dispositivos from './views/devices.js';
 import * as papelera from './views/trash.js';
 import * as ajustes from './views/settings.js';
+import * as pro from './views/pro.js';
+import { loadPlan } from './services/plan.js';
 
-const VIEWS = { panel, escaner, mapa, estadisticas, registros, alertas, reportes, asistente, dispositivos, papelera, ajustes };
+const VIEWS = { panel, escaner, mapa, estadisticas, registros, alertas, reportes, asistente, dispositivos, papelera, pro, ajustes };
 const DEVICE_VIEWS = ['panel', 'escaner', 'mapa', 'registros', 'alertas', 'ajustes'];
 const inited = new Set();
 let current = null, started = false;
@@ -81,6 +83,7 @@ async function startApp() {
   await loadData();
   watchLocation();
   reconnectBluetooth();
+  loadPlan();
   // La IA pesa: se descarga cuando el navegador está libre
   (window.requestIdleCallback || ((f) => setTimeout(f, 800)))(() => loadModels());
   checkClaude().then(() => bus.emit('claude:status'));
