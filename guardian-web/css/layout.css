@@ -112,6 +112,8 @@
   .topbar { grid-column: 1; padding: 0 16px; }
   .topbar .mobile-brand { display: block; width: 30px; height: 30px; border-radius: 8px; }
   .topbar .hide-sm { display: none !important; }
+  .topbar .status-pill span { display: none; }   /* en celular solo el punto de color */
+  .topbar .status-pill { padding: 10px; }
   .main { grid-column: 1; }
   .view { padding: 16px; }
   .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); }
