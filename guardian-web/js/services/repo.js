@@ -65,6 +65,7 @@ async function resolveOwner() {
 export async function syncFromCloud() {
   if (!cloud()) return;
   await resolveOwner();
+  await migrateLocalToCloud();
   await flushOutbox();
   const since = new Date(Date.now() - 400 * 864e5).toISOString();
   const jobs = Object.entries(TYPES).map(async ([type, t]) => {
@@ -83,6 +84,26 @@ export async function syncFromCloud() {
   jobs.push(loadDevices());
   await Promise.all(jobs);
   subscribeRealtime();
+}
+
+/* La primera vez que una cuenta principal entra con nube, lo que estaba
+   guardado solo en este navegador se sube a la cuenta (no se pierde nada) */
+async function migrateLocalToCloud() {
+  if (auth.isDevice) return;
+  const flag = 'cloudMigrated:' + auth.user.id;
+  if (await ldb.getKV(flag)) return;
+  let n = 0;
+  for (const [type, t] of Object.entries(TYPES)) {
+    for (const row of data[t.store]) {
+      try { await cloudInsert(type, row); n++; }
+      catch (e) { await ldb.put('outbox', { id: uid(), op: 'insert', type, rowId: row.id, extra: {}, at: Date.now() }); }
+    }
+  }
+  const convIds = new Set(data.conversations.map((c) => c.id));
+  const msgs = (await ldb.all('messages')).filter((m) => convIds.has(m.conversation_id));
+  if (msgs.length) await sb().from('chat_messages').upsert(msgs, { onConflict: 'id', ignoreDuplicates: true });
+  await ldb.setKV(flag, true);
+  if (n) bus.emit('outbox:flushed', n);
 }
 
 /* ---------- Crear ---------- */
@@ -113,7 +134,9 @@ async function cloudInsert(type, r, extra = {}) {
     await ldb.put(t.store, r);
   }
   if (type === 'sighting' && extra.species) await ensureSpecies(extra.species);
-  const { error } = await sb().from(t.table).upsert(pick(r, t.cols), { onConflict: 'id' });
+  let { error } = await sb().from(t.table).upsert(pick(r, t.cols), { onConflict: 'id' });
+  // Especie que no está en el catálogo (p. ej. identificada por Claude antes de tener nube): se guarda sin enlace
+  if (error?.code === '23503' && type === 'sighting') ({ error } = await sb().from(t.table).upsert({ ...pick(r, t.cols), species_id: null }, { onConflict: 'id' }));
   if (error) throw error;
   if (type === 'sighting' && extra.detections?.length) {
     await sb().from('sighting_detections').insert(extra.detections.map((d) => ({ sighting_id: r.id, clase: d.class, score: +d.score.toFixed(4), bbox: d.bbox.map(Math.round) })));
