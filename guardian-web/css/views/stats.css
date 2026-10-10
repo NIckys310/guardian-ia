@@ -1,0 +1,12 @@
+/* =========================================================
+   GUARDIÁN · Estadísticas dinámicas
+   ========================================================= */
+#view-estadisticas .view-head select.input { width: auto; min-width: 190px; }
+#statsLive i { background: var(--olive); animation: ping 2s infinite; }
+#statsLive.flash { animation: glow-border .8s var(--ease); }
+.kpi .kpi-value.bump { animation: pop-in .4s var(--ease-spring); }
+#speciesTable tr { cursor: pointer; }
+#speciesTable .bar { display: block; height: 4px; border-radius: 2px; background: var(--olive); margin-top: 4px; transform-origin: left; animation: grow-x .6s var(--ease) both; }
+#speciesTable td:first-child { min-width: 220px; }
+#speciesTable .sp { display: flex; align-items: center; gap: 10px; }
+#speciesTable .sp i { font-family: var(--serif); color: var(--muted); }
