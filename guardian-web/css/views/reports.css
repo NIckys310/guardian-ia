@@ -1,0 +1,29 @@
+/* =========================================================
+   GUARDIÁN · Cápsula de reportes
+   Los reportes se guardan en el sistema como en una cápsula del tiempo.
+   ========================================================= */
+.reports-grid { align-items: start; }
+.rep-preview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; border-radius: var(--radius-sm); overflow: hidden; background: var(--line); }
+.rep-preview div { background: var(--bg-2); padding: 10px 12px; }
+.rep-preview b { display: block; font: 600 22px var(--mono); }
+.rep-preview span { font-size: 11.5px; color: var(--muted); }
+@media (max-width: 520px) { .rep-preview { grid-template-columns: 1fr 1fr; } }
+
+.capsule-timeline { position: relative; display: grid; gap: 14px; padding-left: 26px; max-height: calc(100dvh - 240px); overflow-y: auto; }
+.capsule-timeline::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--olive), var(--line)); border-radius: 2px; }
+.capsule {
+  position: relative; padding: 14px; border-radius: var(--radius-sm);
+  background: var(--bg-2); border: 1px solid var(--line);
+  animation: rise .4s var(--ease) both;
+  transition: border-color .2s var(--ease), transform .2s var(--ease);
+}
+.capsule:hover { border-color: var(--line-2); transform: translateX(3px); }
+.capsule::before { content: ""; position: absolute; left: -22px; top: 18px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--olive); }
+.capsule .stamp { font: 600 11px var(--mono); color: var(--olive); text-transform: uppercase; letter-spacing: .08em; }
+.capsule h5 { font: 600 18px/1.2 var(--serif); margin: 4px 0 6px; }
+.capsule .nums { display: flex; gap: 14px; flex-wrap: wrap; font: 500 12px var(--mono); color: var(--muted); }
+.capsule .nums b { color: var(--text); }
+.capsule .actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+/* Vista del reporte guardado */
+.report-frame { width: 100%; height: min(72dvh, 900px); border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
