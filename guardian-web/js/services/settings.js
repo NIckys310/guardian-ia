@@ -18,7 +18,6 @@ export const DEFAULTS = {
   autoClaudeMax: 20,        // máximo de consultas automáticas por sesión
   notify: true,
   sound: true,
-  webhook: '',
   idleMin: 30
 };
 

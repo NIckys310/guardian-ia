@@ -5,7 +5,8 @@
    ========================================================= */
 import { insert } from './repo.js';
 import { currentPos } from './geo.js';
-import { beep, systemNotify, sendWebhook } from './notify.js';
+import { beep, systemNotify } from './notify.js';
+import { btNotify } from './bluetooth.js';
 import { THREATS } from './ai-local.js';
 import { toast } from '../ui/toast.js';
 import { bus } from '../core/bus.js';
@@ -28,7 +29,7 @@ export async function recordSighting(sp, conf, { photo = null, fuente = 'camara'
   }, { species: sp, detections });
   beep('ok');
   toast(`Avistamiento registrado: ${sp.nombre} (${pct(conf)})`, 'ok');
-  sendWebhook({ evento: 'avistamiento', especie: sp.nombre, cientifico: sp.cientifico, conf, lat: pos.lat, lng: pos.lng, time: row.created_at });
+  btNotify({ evento: 'avistamiento', especie: sp.nombre, cientifico: sp.cientifico, conf, lat: pos.lat, lng: pos.lng, time: row.created_at });
   return row;
 }
 
@@ -45,7 +46,7 @@ export async function raiseAlert(cls, conf, { mensaje, photo = null } = {}) {
   });
   beep('alert');
   systemNotify('Guardián · alerta', row.mensaje, 'alerta-' + row.id);
-  sendWebhook({ evento: 'alerta', tipo, clase: cls, conf, lat: pos.lat, lng: pos.lng, mensaje: row.mensaje, time: row.created_at });
+  btNotify({ evento: 'alerta', tipo, clase: cls, conf, lat: pos.lat, lng: pos.lng, mensaje: row.mensaje, time: row.created_at });
   toast(row.mensaje, 'err', { action: { label: 'Ver', fn: () => bus.emit('nav:go', 'alertas') }, ms: 7000 });
   return row;
 }

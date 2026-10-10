@@ -1,5 +1,5 @@
 /* =========================================================
-   GUARDIÁN · Sonido, notificaciones del sistema y webhook
+   GUARDIÁN · Sonido y notificaciones del sistema
    ========================================================= */
 import { settings } from './settings.js';
 
@@ -32,12 +32,4 @@ export async function systemNotify(title, body, tag) {
     if (reg) reg.showNotification(title, { body, tag, icon: 'assets/icon-192.png', badge: 'assets/icon-192.png', vibrate: [200, 100, 200] });
     else new Notification(title, { body, tag, icon: 'assets/icon-192.png' });
   } catch { /* algunos navegadores lo bloquean */ }
-}
-
-/* Envía el evento como JSON a la URL configurada (otros equipos, bots, etc.) */
-export function sendWebhook(payload) {
-  const url = settings.webhook;
-  if (!url || !/^https?:\/\//.test(url)) return;
-  fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) })
-    .catch((e) => console.warn('Webhook falló', e));
 }
