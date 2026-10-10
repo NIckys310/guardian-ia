@@ -12,13 +12,16 @@ import { sb } from '../services/cloud.js';
 import { ldb } from '../core/local-db.js';
 import { outboxCount, flushOutbox, active } from '../services/repo.js';
 import { claude, checkClaude } from '../services/ai-cloud.js';
-import { askNotificationPermission, sendWebhook } from '../services/notify.js';
+import { askNotificationPermission, beep } from '../services/notify.js';
+import { bt, btSupported, connectBluetooth, disconnectBluetooth, btNotify } from '../services/bluetooth.js';
 import { cloudConfigured } from '../config.js';
 
 const card = (ic, title, hint, body) => `<div class="card reveal"><h4 class="card-head" style="margin:0 0 4px">${icon(ic)} ${title}</h4><p class="hint">${hint}</p>${body}</div>`;
 const sw = (id, label, help, checked, cls = '') => `<label class="switch ${cls}"><span>${label}<small>${help}</small></span><input type="checkbox" id="${id}" ${checked ? 'checked' : ''}></label>`;
 
-export function init() { bus.on('claude:status', () => { if ($('#view-ajustes').classList.contains('active')) render(); }); }
+export function init() {
+  bus.on('bt:status', () => paintBluetooth());
+  bus.on('claude:status', () => { if ($('#view-ajustes').classList.contains('active')) render(); }); }
 export function show() { render(); }
 
 async function render() {
@@ -49,8 +52,8 @@ async function render() {
     card('bell', 'Alertas y conexiones', 'Cómo te avisa Guardián.', `
       ${sw('setNotify', 'Notificaciones del sistema', 'Aunque Guardián esté minimizado.', s.notify)}
       ${sw('setSound', 'Sonido de alerta', 'Pitido corto al detectar algo.', s.sound)}
-      <label class="field" style="margin-top:12px">Webhook (otros equipos, bots, drones)<input class="input" id="setWebhook" type="url" placeholder="https://mi-servidor.com/alertas" value="${esc(s.webhook)}"></label>
-      <div class="row" style="margin-top:8px"><button class="btn sm" id="setTestHook">${icon('send')}Enviar prueba</button></div>`),
+      <div class="set-row"><div><b>Dispositivo Bluetooth</b><small>Pulseras o llaveros BLE con alerta, o una placa ESP32 (programa en docs/esp32-guardian-ble.ino). Pitan o vibran con cada alerta.</small></div><span class="chip" id="btChip"><i></i>—</span></div>
+      <div class="row end" id="btActions"></div>`),
     card('database', 'Datos', cloud ? 'Tus datos están en la nube (Supabase) con copia en este equipo para trabajar sin internet.' : 'Modo local: todo se guarda en este navegador.', `
       <div class="set-row"><div><b>Registros</b><small>Activos en este momento.</small></div><span class="mono">${active('sighting').length} avist. · ${active('alert').length} alertas · ${active('report').length} reportes</span></div>
       <div class="set-row"><div><b>Espacio usado en este equipo</b><small id="storeTxt">Calculando…</small></div><div class="progress storage-bar" style="width:160px"><i id="storeBar"></i></div></div>
@@ -74,16 +77,7 @@ function bind() {
   on('#setAutoMax', 'change', (e) => saveSettings({ autoClaudeMax: +e.target.value }));
   on('#setNotify', 'change', (e) => { saveSettings({ notify: e.target.checked }); if (e.target.checked) askNotificationPermission(); });
   on('#setSound', 'change', (e) => saveSettings({ sound: e.target.checked }));
-  on('#setWebhook', 'change', (e) => {
-    const v = e.target.value.trim();
-    if (v && !/^https?:\/\//.test(v)) { toast('La URL debe empezar por http:// o https://', 'err'); return; }
-    saveSettings({ webhook: v }); toast('Webhook guardado', 'ok');
-  });
-  on('#setTestHook', 'click', () => {
-    if (!settings.webhook) return toast('Escribe primero la URL del webhook', 'err');
-    sendWebhook({ evento: 'prueba', mensaje: 'Conexión de prueba desde Guardián', time: new Date().toISOString() });
-    toast('Prueba enviada', 'ok');
-  });
+  paintBluetooth();
   on('#setIdle', 'change', (e) => saveSettings({ idleMin: +e.target.value }));
   on('#setOutAll', 'click', () => signOut(true));
   on('#setOut', 'click', () => signOut());
@@ -176,4 +170,26 @@ async function auditDialog() {
   const { data: rows } = await sb().from('audit_log').select('accion, created_at, user_agent').order('created_at', { ascending: false }).limit(40);
   const names = { inicio_sesion: 'Inicio de sesión', inicio_sesion_2fa: 'Inicio de sesión con 2 pasos', cierre_sesion: 'Cierre de sesión', registro: 'Creación de la cuenta', cambio_contrasena: 'Cambio de contraseña', '2fa_activada': '2 pasos activada', '2fa_desactivada': '2 pasos desactivada' };
   openModal({ title: 'Actividad reciente', html: `<div class="audit-list">${(rows || []).map((r) => `<div><b>${esc(names[r.accion] || r.accion)}</b><span>${fmtDate(r.created_at)}</span></div>`).join('') || '<p class="muted">Sin actividad registrada.</p>'}</div>` });
+}
+
+/* ---------- Bluetooth ---------- */
+function paintBluetooth() {
+  const chip = $('#btChip'), box = $('#btActions');
+  if (!chip) return;
+  if (!btSupported()) {
+    chip.className = 'chip warn'; chip.innerHTML = '<i></i>No disponible';
+    box.innerHTML = '<small class="muted">Este navegador no tiene Bluetooth web. Abre Guardián en Chrome o Edge.</small>';
+    return;
+  }
+  const st = { on: ['ok', `Conectado: ${esc(bt.name)}`], connecting: ['warn', 'Conectando…'], off: ['', 'Sin conectar'] }[bt.status];
+  chip.className = 'chip ' + st[0]; chip.innerHTML = `<i></i>${st[1]}`;
+  box.innerHTML = bt.status === 'off'
+    ? `<button class="btn sm primary" id="btConnect">${icon('wifi')}Conectar dispositivo</button>`
+    : `<button class="btn sm" id="btTest">${icon('bell')}Probar</button><button class="btn sm danger" id="btOff">${icon('unlink')}Desconectar</button>`;
+  $('#btConnect')?.addEventListener('click', async () => {
+    try { await connectBluetooth(); toast(`Bluetooth conectado: ${bt.name}`, 'ok'); }
+    catch (e) { if (e.name !== 'NotFoundError') toast(e.message, 'err'); }
+  });
+  $('#btTest')?.addEventListener('click', async () => { await btNotify({ evento: 'prueba', mensaje: 'Prueba desde Guardián', time: new Date().toISOString() }); beep('ok'); toast('Prueba enviada por Bluetooth', 'ok'); });
+  $('#btOff')?.addEventListener('click', () => { disconnectBluetooth(); toast('Bluetooth desconectado'); });
 }
