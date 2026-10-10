@@ -1,0 +1,47 @@
+/* =========================================================
+   GUARDIÁN · Animaciones
+   Todas se apagan solas si el sistema pide "reducir movimiento".
+   ========================================================= */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(.94) translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes zoom-in { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes toast-in { from { opacity: 0; transform: translateX(40px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes toast-out { to { opacity: 0; transform: translateX(40px) scale(.96); } }
+@keyframes ripple { to { transform: scale(4); opacity: 0; } }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes blink { 50% { opacity: .3; } }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--olive) 70%, transparent); } 80%, 100% { box-shadow: 0 0 0 8px transparent; } }
+@keyframes ping-red { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--alert) 70%, transparent); } 80%, 100% { box-shadow: 0 0 0 14px transparent; } }
+@keyframes sweep { from { transform: translateY(0); } to { transform: translateY(var(--h, 400px)); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes drop-pin { 0% { opacity: 0; transform: translateY(-24px) scale(.6); } 60% { opacity: 1; transform: translateY(2px) scale(1.06); } 100% { transform: none; } }
+@keyframes shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
+@keyframes radar { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+@keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
+@keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes glow-border { 0%, 100% { border-color: var(--line); } 50% { border-color: color-mix(in srgb, var(--olive) 70%, var(--line)); } }
+
+/* Entrada escalonada de elementos al cambiar de vista */
+.view.active .reveal { animation: rise .5s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms); }
+.view.active { animation: fade-in .25s var(--ease); }
+
+/* Transiciones de vista nativas (Chrome/Edge) */
+::view-transition-old(root) { animation: .18s var(--ease) both fade-out-down; }
+::view-transition-new(root) { animation: .28s var(--ease) both rise; }
+@keyframes fade-out-down { to { opacity: 0; transform: translateY(6px); } }
+
+.spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite; display: inline-block; }
+.shake { animation: shake .45s var(--ease); }
+.pulse-alert { animation: ping-red 1.6s infinite; }
+
+/* Puntos de "escribiendo" del asistente */
+.typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: typing 1.2s infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; }
+.typing i:nth-child(3) { animation-delay: .3s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+}
+:root[data-motion="off"] *, :root[data-motion="off"] *::before, :root[data-motion="off"] *::after { animation: none !important; transition: none !important; }
