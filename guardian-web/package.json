@@ -1,0 +1,17 @@
+{
+  "name": "guardian-web",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Guardián: vigilancia de fauna con IA",
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "semilla": "node scripts/generar-semilla-especies.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
