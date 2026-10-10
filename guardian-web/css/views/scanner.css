@@ -93,3 +93,13 @@
 .capture:hover img { transform: scale(1.06); }
 .capture span { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 8px 6px; font: 600 12px var(--font); color: #fff; text-align: left; background: linear-gradient(transparent, rgba(0,0,0,.75)); }
 .capture .grp { position: absolute; top: 6px; left: 6px; }
+
+/* Celular: botones en dos columnas iguales (simétricos) */
+@media (max-width: 720px) {
+  .viewer-card .toolbar { display: grid; grid-template-columns: 1fr 1fr; }
+  .viewer-card .toolbar select.input, .viewer-card .toolbar .input[type=url] { grid-column: 1 / -1; }
+  .viewer-card .toolbar .btn { width: 100%; }
+  .viewer { aspect-ratio: 3 / 4; max-height: 52dvh; }
+}
+/* El HUD solo aparece cuando hay imagen */
+.placeholder:not(.hidden) ~ .hud, .viewer:has(.placeholder:not(.hidden)) .hud { display: none; }
