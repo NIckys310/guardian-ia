@@ -71,3 +71,34 @@
   .map-fabs { right: 12px; }
   #btnMapLegend, .sm-only { display: inline-grid; }
 }
+
+/* ---------- Animaciones del mapa ---------- */
+.pin svg { animation: none; }                       /* la animación la lleva .pin-wrap */
+.pin .pin-wrap { position: relative; transform-origin: bottom center; }
+.pin .pin-wrap.drop { animation: drop-pin .6s var(--ease-spring) both; }
+.pin .pin-shadow { position: absolute; left: 50%; bottom: -3px; width: 14px; height: 5px; margin-left: -7px; border-radius: 50%; background: rgba(0, 0, 0, .45); filter: blur(1.5px); }
+.pin:hover .pin-wrap { animation: pin-bounce .5s var(--ease-spring); }
+@keyframes pin-bounce { 40% { transform: translateY(-8px) scale(1.08); } 100% { transform: none; } }
+/* Avistamiento de la última hora: anillo que respira */
+.pin.fresh .pin-wrap::before { content: ""; position: absolute; left: 50%; bottom: -6px; width: 30px; height: 12px; margin-left: -15px; border-radius: 50%; border: 2px solid var(--olive); animation: fresh-ring 1.8s ease-out infinite; }
+@keyframes fresh-ring { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(1.8); opacity: 0; } }
+/* Alerta pendiente: tiembla cada pocos segundos */
+.pin.pending .pin-wrap:not(.drop) { animation: alert-shake 3s ease-in-out infinite; }
+@keyframes alert-shake { 0%, 86%, 100% { transform: rotate(0); } 89% { transform: rotate(-8deg); } 93% { transform: rotate(8deg); } 97% { transform: rotate(-4deg); } }
+/* Onda expansiva cuando llega algo nuevo */
+.map-ripple { position: relative; width: 0; height: 0; pointer-events: none; }
+.map-ripple i { position: absolute; left: -60px; top: -60px; width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--rc); animation: map-wave 2.4s var(--ease) both; }
+.map-ripple i:nth-child(2) { animation-delay: .35s; }
+.map-ripple i:nth-child(3) { animation-delay: .7s; }
+@keyframes map-wave { 0% { transform: scale(.1); opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+/* Grupos de puntos que aparecen y respiran */
+.cluster { animation: pop-in .45s var(--ease-spring) both, cluster-breathe 3s ease-in-out 1s infinite; }
+@keyframes cluster-breathe { 50% { box-shadow: 0 0 0 11px color-mix(in srgb, var(--olive) 16%, transparent); } }
+.cluster.has-alert { animation: pop-in .45s var(--ease-spring) both, ping-red 1.6s infinite; }
+/* Distribución natural: borde punteado que avanza */
+.range-anim { animation: range-dash 1.2s linear infinite; }
+@keyframes range-dash { to { stroke-dashoffset: -24; } }
+/* Guía de íconos: entrada escalonada */
+#mapPanel .legend-item { animation: rise .4s var(--ease) both; animation-delay: calc(var(--li, 0) * 35ms); }
+.map-fabs .icon-btn { transition: transform .2s var(--ease-spring); }
+.map-fabs .icon-btn:hover { transform: scale(1.1); }
