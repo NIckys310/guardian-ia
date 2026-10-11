@@ -12,6 +12,22 @@ import { raiseAlert } from '../services/events.js';
 
 let filter = 'pending', selected = new Set();
 
+/* Atajo desde Gestores (gesto del reloj): #/alertas/confirmar marca como atendida la última alerta pendiente */
+const wantsConfirm = () => /^#\/alertas\/confirmar/.test(location.hash);
+let confirmPending = wantsConfirm();
+addEventListener('hashchange', () => { if (wantsConfirm()) confirmPending = true; });
+
+async function confirmLast(tries = 0) {
+  const last = active('alert').filter((a) => !a.atendida)
+    .sort((x, y) => String(y.created_at).localeCompare(String(x.created_at)))[0];
+  if (!last) {
+    if (tries < 3) return setTimeout(() => confirmLast(tries + 1), 1500);   // los datos de la nube pueden tardar
+    return toast('No hay alertas pendientes', 'ok');
+  }
+  await update('alert', [last.id], { atendida: true });
+  toast(`Alerta confirmada desde el reloj: ${last.tipo}`, 'ok');
+}
+
 export function init() {
   $('#alertFilter').addEventListener('click', (e) => {
     const b = e.target.closest('[data-f]'); if (!b) return;
@@ -32,7 +48,10 @@ export function init() {
   bus.on('data:alerts', () => { if ($('#view-alertas').classList.contains('active')) render(); });
 }
 
-export function show() { render(); }
+export function show() {
+  render();
+  if (confirmPending) { confirmPending = false; confirmLast(); }
+}
 
 const list = () => active('alert').filter((a) => filter === 'all' || (filter === 'pending' ? !a.atendida : a.atendida));
 
