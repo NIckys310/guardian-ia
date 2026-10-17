@@ -40,9 +40,9 @@ export async function overLimit(token, kind) {
   if (!token) return false;
   try {
     const r = await rest('rpc/ia_permitida', token, { method: 'POST', body: JSON.stringify({ p_kind: kind }) });
-    if (!r.ok) return false;
+    if (!r.ok) return true;                     // si no se puede comprobar, mejor no gastar sin control
     return (await r.json()) === false;
-  } catch { return false; }
+  } catch { return true; }
 }
 
 /* Llama una función de la base de datos sin sesión (la función verifica todo por dentro) */
