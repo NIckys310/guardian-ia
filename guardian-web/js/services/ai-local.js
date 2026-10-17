@@ -15,7 +15,7 @@ export const THREATS = { person: 'Persona', car: 'Vehículo', truck: 'Camión', 
 export const COCO_ANIMALS = ['bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe'];
 
 const LIBS = [
-  'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js',
+  'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.es2017.min.js',
   'https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js',
   'https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js'
 ];
