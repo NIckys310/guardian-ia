@@ -25,6 +25,13 @@
     Permissions-Policy = "camera=(self), geolocation=(self), bluetooth=(self), microphone=(), payment=(), usb=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     Cross-Origin-Opener-Policy = "same-origin"
+    # Política de contenido (CSP): el navegador solo carga código de la propia app y de las
+    # librerías conocidas. Si alguien lograra meter un <script> extraño, el navegador lo bloquea.
+    #  · script: la app + cdnjs (Leaflet, QR) + jsdelivr (Chart.js, Supabase, IA)
+    #  · connect: Supabase (datos y tiempo real), modelos de IA, Wikipedia
+    #  · img: cualquier https/http (fotos de Supabase, mapas, cámaras IP de la red local)
+    #  · style 'unsafe-inline': los colores y animaciones que la app calcula en cada tarjeta
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https: http:; media-src 'self' blob:; connect-src 'self' https://jktmtdpgvjlrdxqmdbrp.supabase.co wss://jktmtdpgvjlrdxqmdbrp.supabase.co https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com https://tfhub.dev https://www.kaggle.com https://storage.googleapis.com https://es.wikipedia.org; worker-src 'self' blob:; frame-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
 
 # El service worker y el index siempre frescos (para recibir actualizaciones)
 [[headers]]
