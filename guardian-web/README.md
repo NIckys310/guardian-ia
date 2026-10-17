@@ -63,3 +63,24 @@ La clave nunca llega al navegador.
 - Verificación en dos pasos (app autenticadora) y cierre por inactividad.
 - Reglas RLS: cada cuenta solo ve sus datos; los celulares vinculados trabajan para su cuenta principal.
 - Bitácora de auditoría de inicios de sesión y cambios de seguridad.
+
+## Pruebas automáticas
+
+Guardián tiene **110 pruebas** que usan el probador que ya trae Node (no hay que instalar nada extra).
+
+```bash
+npm test               # todas las pruebas
+npm run test:sintaxis  # revisa que todo el JavaScript se pueda leer
+```
+
+| Carpeta | Qué revisa |
+|---|---|
+| `tests/core` | Utilidades: texto seguro (HTML), fechas, porcentajes, categorías UICN, bus de eventos |
+| `tests/data` | Catálogo de especies (79) y grupos del mapa: datos completos, sin repetidos |
+| `tests/services` | IA local: reconocer especies y colores de los recuadros |
+| `tests/netlify` | Funciones del servidor: sesión, límites de IA, validación de fotos y chat, pagos Wompi (sin gastar IA real) |
+| `tests/supabase` | Migraciones: todas las tablas con RLS, políticas y funciones seguras |
+| `tests/seguridad` | Ninguna clave secreta en el código y encabezados de seguridad del sitio |
+| `tests/pwa` | App instalable: service worker, manifest e index sin archivos perdidos |
+
+En GitHub, cada cambio en `main` corre las pruebas solo (`.github/workflows/pruebas.yml`).
