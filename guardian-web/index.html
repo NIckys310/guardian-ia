@@ -41,26 +41,7 @@
   <span class="mono">Iniciando estación…</span>
   <button id="bootFix" class="btn primary" hidden>Reparar y abrir</button>
 </div>
-<script>
-  /* Si la app instalada se queda con una versión vieja guardada y no abre,
-     a los 10 s aparece "Reparar y abrir": borra la copia guardada y recarga.
-     (No borra avistamientos ni la sesión.) */
-  setTimeout(function () {
-    var b = document.getElementById('bootFix');
-    if (!b || !document.getElementById('boot') || document.getElementById('boot').classList.contains('done')) return;
-    b.hidden = false;
-    b.onclick = async function () {
-      b.textContent = 'Reparando…';
-      try {
-        var regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(function (r) { return r.unregister(); }));
-        var keys = await caches.keys();
-        await Promise.all(keys.map(function (k) { return caches.delete(k); }));
-      } catch (e) {}
-      location.replace(location.pathname + '?r=' + Date.now());
-    };
-  }, 10000);
-</script>
+<script src="js/boot-fix.js"></script>
 
 <!-- ============ INICIO DE SESIÓN ============ -->
 <div id="authScreen" class="auth hidden" role="main"></div>
