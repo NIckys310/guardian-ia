@@ -66,7 +66,7 @@ La clave nunca llega al navegador.
 
 ## Pruebas automáticas
 
-Guardián tiene **110 pruebas** que usan el probador que ya trae Node (no hay que instalar nada extra).
+Guardián tiene **120 pruebas** que usan el probador que ya trae Node (no hay que instalar nada extra).
 
 ```bash
 npm test               # todas las pruebas
@@ -80,7 +80,15 @@ npm run test:sintaxis  # revisa que todo el JavaScript se pueda leer
 | `tests/services` | IA local: reconocer especies y colores de los recuadros |
 | `tests/netlify` | Funciones del servidor: sesión, límites de IA, validación de fotos y chat, pagos Wompi (sin gastar IA real) |
 | `tests/supabase` | Migraciones: todas las tablas con RLS, políticas y funciones seguras |
-| `tests/seguridad` | Ninguna clave secreta en el código y encabezados de seguridad del sitio |
+| `tests/seguridad` | Ninguna clave secreta en el código, encabezados de seguridad y política de contenido (CSP) |
 | `tests/pwa` | App instalable: service worker, manifest e index sin archivos perdidos |
 
 En GitHub, cada cambio en `main` corre las pruebas solo (`.github/workflows/pruebas.yml`).
+
+## Política de contenido (CSP)
+El sitio envía una **Content-Security-Policy** (en `netlify.toml`): el navegador solo ejecuta código de
+la propia app y de las librerías conocidas (cdnjs y jsdelivr). Si alguien lograra meter un `<script>`
+extraño, el navegador lo bloquea. Por eso:
+- No se escribe código dentro del HTML (el arreglo "Reparar y abrir" está en `js/boot-fix.js`).
+- TensorFlow se carga en su versión `tf.es2017.min.js`, que no necesita `eval`.
+- Si agregas una librería o un servicio nuevo, agrégalo a la CSP; `tests/seguridad/csp.test.mjs` te avisa si se te olvida.
