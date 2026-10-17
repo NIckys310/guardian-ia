@@ -167,7 +167,7 @@ export const COLOMBIA = [
     zonas:[[6,-71,400],[-1,-71,400]], match:['african grey','lorikeet','cockatoo','parrot'] },
 
   /* ------------------------ Reptiles ------------------------ */
-  { id:'charapa', grupo:'reptil', nombre:'Tortuga charapa', cientifico:'Podocnemis expansa', estado:'En peligro crítico en Colombia (Libro Rojo)',
+  { id:'charapa', grupo:'reptil', nombre:'Tortuga charapa', cientifico:'Podocnemis expansa', estado:'En peligro crítico en Colombia (CR, Libro Rojo)',
     habitat:'Grandes ríos de la Amazonía y la Orinoquía; desova en playas de arena.',
     reproduccion:'Cada hembra pone de 80 a 120 huevos en la arena durante la temporada seca.',
     dieta:'Herbívora: frutos, semillas y plantas acuáticas.',
