@@ -83,7 +83,7 @@ async function startApp() {
   await loadData();
   watchLocation();
   reconnectBluetooth();
-  loadPlan();
+  loadPlan().catch(() => {});   // si la nube falla, se queda el plan gratis y la pantalla Pro avisa
   // La IA pesa: se descarga cuando el navegador está libre
   (window.requestIdleCallback || ((f) => setTimeout(f, 800)))(() => loadModels());
   checkClaude().then(() => bus.emit('claude:status'));
