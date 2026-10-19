@@ -29,3 +29,48 @@
 .plan-cta .btn.block { width: 100%; }
 .usage { display: grid; gap: 6px; font-size: 13.5px; }
 .usage .progress { height: 8px; }
+
+/* ---------- MODO PRUEBA (pagos simulados) ---------- */
+.test-banner {
+  display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; margin-bottom: var(--gap);
+  border: 1px dashed color-mix(in srgb, var(--amber) 70%, transparent); border-radius: 14px;
+  background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--amber) 9%, transparent) 0 14px, transparent 14px 28px), var(--panel);
+  font-size: 14px; line-height: 1.5;
+}
+.test-banner.slim { padding: 10px 12px; margin-bottom: 14px; font-size: 13px; align-items: center; }
+.test-badge {
+  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+  background: var(--amber); color: var(--amber-ink); font: 700 11.5px var(--mono); letter-spacing: .08em;
+  animation: pulse-badge 2.4s ease-in-out infinite;
+}
+@keyframes pulse-badge { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--amber) 18%, transparent); } }
+.pay-summary { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 14px; border-radius: 12px; background: var(--panel-2, var(--panel)); margin-bottom: 12px; }
+.pay-summary b { font: 700 22px var(--mono); }
+.pay-methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.pay-method { display: flex; gap: 10px; align-items: center; text-align: left; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; transition: border-color .2s, transform .2s; }
+.pay-method:hover { transform: translateY(-2px); }
+.pay-method.active { border-color: var(--olive); box-shadow: inset 0 0 0 1px var(--olive); }
+.pay-method span { display: grid; gap: 2px; }
+.pay-method small { color: var(--muted); font-size: 12px; }
+.pay-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.pay-fields label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.pay-fields input[readonly] { opacity: .85; cursor: not-allowed; }
+.pay-steps { display: grid; gap: 12px; padding: 10px 4px 4px; }
+.pay-step { display: flex; align-items: center; gap: 12px; color: var(--muted); transition: color .3s; }
+.pay-step .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); flex: none; }
+.pay-step.doing { color: var(--text, inherit); }
+.pay-step.doing .dot { border-color: var(--amber); border-top-color: transparent; animation: spin .8s linear infinite; }
+.pay-step.done { color: var(--olive); }
+.pay-step.done .dot { background: var(--olive); border-color: var(--olive); animation: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.receipt { text-align: center; padding: 6px 0 14px; }
+.receipt-ok { width: 56px; height: 56px; margin: 0 auto 8px; border-radius: 50%; display: grid; place-items: center; background: var(--olive); color: #fff; animation: pop .5s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes pop { from { transform: scale(.3); opacity: 0; } }
+.receipt dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; text-align: left; max-width: 420px; margin: 12px auto 0; font-size: 14px; }
+.receipt dt { color: var(--muted); }
+.receipt dd { margin: 0; }
+.mail-preview { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 6px 0 14px; }
+.mail-head { display: flex; gap: 10px; align-items: center; padding: 10px 12px; background: var(--panel-2, var(--panel)); }
+.mail-head small { display: block; color: var(--muted); font-size: 12px; }
+.mail-subject { padding: 10px 12px 0; font-weight: 600; }
+.mail-body { margin: 0; padding: 8px 12px 12px; white-space: pre-wrap; font: 13px/1.55 var(--mono); color: var(--muted); }
