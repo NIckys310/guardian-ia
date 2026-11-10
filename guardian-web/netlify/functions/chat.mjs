@@ -20,6 +20,7 @@ Reglas:
   Nacionales Naturales, línea 123).
 - No ayudes a cazar, capturar, traficar o dañar fauna silvestre.`;
 
+const INGLES = '\n\nIMPORTANTE: la persona usa la app en inglés. Responde siempre en inglés.';
 const MAX_MSGS = 30, MAX_CHARS = 4000;
 
 function cleanMessages(list) {
@@ -60,7 +61,7 @@ export default async (req) => {
           fallbacks: 'default',
           output_config: { effort: 'low' },
           system: [
-            { type: 'text', text: SYSTEM },
+            { type: 'text', text: body.idioma === 'en' ? SYSTEM + INGLES : SYSTEM },
             { type: 'text', text: `<datos_estacion>\n${datos}\n</datos_estacion>` }
           ],
           messages

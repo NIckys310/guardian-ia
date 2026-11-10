@@ -5,6 +5,7 @@
    ========================================================= */
 import { CONFIG } from '../config.js';
 import { auth } from './auth.js';
+import { idioma } from '../core/i18n.js';
 
 export const claude = { configured: null, model: '' };
 
@@ -48,7 +49,7 @@ export async function identifyWithClaude(imageDataURL, { kind = 'identify' } = {
   try {
     r = await fetch(`${CONFIG.functionsBase}/identify`, {
       method: 'POST', headers: headers(),
-      body: JSON.stringify({ image: imageDataURL.split(',')[1], kind })
+      body: JSON.stringify({ image: imageDataURL.split(',')[1], kind, idioma })
     });
   } catch { throw new AIError('Sin conexión con el servidor de IA.', 0); }
   if (!r.ok) throw await failure(r);
@@ -61,7 +62,7 @@ export async function chatStream({ messages, context }, onDelta, signal) {
   try {
     r = await fetch(`${CONFIG.functionsBase}/chat`, {
       method: 'POST', headers: headers(), signal,
-      body: JSON.stringify({ messages, context })
+      body: JSON.stringify({ messages, context, idioma })
     });
   } catch (e) {
     if (e.name === 'AbortError') throw e;

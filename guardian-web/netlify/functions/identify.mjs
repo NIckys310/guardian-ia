@@ -37,6 +37,8 @@ const PROMPT = `Eres biólogo de campo y apoyas a guardaparques en Colombia. Ana
 - amenaza_humana=true solo si ves armas, trampas, redes, animales cazados o personas cazando; explica en motivo_amenaza.
 - Si no estás seguro de la especie, baja la confianza y da el nivel taxonómico que sí puedas confirmar.`;
 
+const INGLES = '\n- IMPORTANTE: escribe nombre, habitat, reproduccion, dieta, distribucion y motivo_amenaza en inglés. Deja estado en español, con su sigla.';
+
 export default async (req) => {
   if (req.method === 'GET') return json(200, { configured: hasKey(), model: MODEL() });
   if (req.method !== 'POST') return json(405, { error: 'Método no permitido' });
@@ -64,7 +66,7 @@ export default async (req) => {
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: image } },
-          { type: 'text', text: PROMPT }
+          { type: 'text', text: body.idioma === 'en' ? PROMPT + INGLES : PROMPT }
         ]
       }]
     });
