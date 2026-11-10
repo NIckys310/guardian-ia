@@ -7,6 +7,7 @@
    ========================================================= */
 import { $, $$, enableRipples, stagger } from './core/dom.js';
 import { bus } from './core/bus.js';
+import { prepararIdioma } from './core/i18n.js';
 import { hydrateIcons, icon } from './ui/icons.js';
 import { toast } from './ui/toast.js';
 import { openModal } from './ui/modal.js';
@@ -42,6 +43,7 @@ let current = null, started = false;
 
 /* ---------- Arranque ---------- */
 async function boot() {
+  await prepararIdioma();
   hydrateIcons();
   enableRipples();
   registerSW();
