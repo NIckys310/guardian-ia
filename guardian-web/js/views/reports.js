@@ -12,6 +12,7 @@ import { active, insert, moveToTrash, restore } from '../services/repo.js';
 import { auth } from '../services/auth.js';
 import { sb } from '../services/cloud.js';
 import { groupOf } from '../data/groups.js';
+import { LOCALE, traducirHtml } from '../core/i18n.js';
 
 const iso = (d) => d.toISOString().slice(0, 10);
 
@@ -34,7 +35,7 @@ function preset(p) {
   $('#repFrom').value = iso(from);
   $('#repTo').value = iso(to);
   const label = { 1: 'diario', 7: 'semanal', 30: 'mensual', m: 'del mes' }[p];
-  if (!$('#repTitle').dataset.touched) $('#repTitle').value = `Reporte ambiental ${label} · ${to.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+  if (!$('#repTitle').dataset.touched) $('#repTitle').value = `Reporte ambiental ${label} · ${to.toLocaleDateString(LOCALE, { day: 'numeric', month: 'long', year: 'numeric' })}`;
   preview();
 }
 document.addEventListener('input', (e) => { if (e.target.id === 'repTitle') e.target.dataset.touched = '1'; });
@@ -128,7 +129,7 @@ function openReport(r, print = false) {
     actions: [{ label: 'Imprimir', icon: 'print', cls: 'primary', fn: () => { m.el.querySelector('iframe').contentWindow.print(); return false; } }]
   });
   const frame = m.el.querySelector('iframe');
-  frame.srcdoc = r.html;
+  frame.srcdoc = traducirHtml(r.html);
   if (print) frame.onload = () => frame.contentWindow.print();
 }
 

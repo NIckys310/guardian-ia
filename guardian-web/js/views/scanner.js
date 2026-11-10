@@ -18,6 +18,7 @@ import { active, photoURL } from '../services/repo.js';
 import { geo } from '../services/geo.js';
 import { auth } from '../services/auth.js';
 import { plan, countUse } from '../services/plan.js';
+import { LOCALE, idioma, t } from '../core/i18n.js';
 
 const S = { stream: null, source: null, busy: false, timer: null, last: null, current: null, wakeLock: null,
   autoClaudeCount: 0, lastAutoClaude: 0, claudeBusy: false, hud: null };
@@ -52,7 +53,7 @@ export function show() {
   if (!modelsReady()) loadModels();
   clearInterval(S.hud);
   const tick = () => {
-    $('#hudTime').textContent = new Date().toLocaleTimeString('es-CO', { hour12: false });
+    $('#hudTime').textContent = new Date().toLocaleTimeString(LOCALE, { hour12: false });
     $('#hudCoords').textContent = geo.pos ? `${coord(geo.pos.lat, geo.pos.lng)} ±${geo.accuracy ?? '?'} m` : 'sin GPS';
   };
   tick(); S.hud = setInterval(tick, 1000);
@@ -251,9 +252,9 @@ function drawBoxes(dets, w, h) {
       .forEach(([a, b, c2, d, e, f]) => { ctx.moveTo(a, b); ctx.lineTo(c2, d); ctx.lineTo(e, f); });
     ctx.stroke();
     ctx.globalAlpha = 0.12; ctx.fillStyle = color; ctx.fillRect(x, y, bw, bh); ctx.globalAlpha = 1;
-    const tw = ctx.measureText(label).width + 12, ty = y > fs + 10 ? y - fs - 8 : y + 2;
+    const tw = ctx.measureText(t(label)).width + 12, ty = y > fs + 10 ? y - fs - 8 : y + 2;
     ctx.fillStyle = color; ctx.fillRect(x, ty, tw, fs + 8);
-    ctx.fillStyle = '#0a0d0b'; ctx.fillText(label, x + 6, ty + fs + 1);
+    ctx.fillStyle = '#0a0d0b'; ctx.fillText(t(label), x + 6, ty + fs + 1);
   });
 }
 function clearOverlay() { const c = $('#overlay'); c.getContext('2d').clearRect(0, 0, c.width, c.height); }
@@ -295,10 +296,10 @@ async function showUnknown(pred) {
 
 async function fetchWiki(term) {
   try {
-    const s = await fetch(`https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(term)}&format=json&origin=*&srlimit=1`).then((r) => r.json());
+    const s = await fetch(`https://${idioma}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(term)}&format=json&origin=*&srlimit=1`).then((r) => r.json());
     const title = s?.query?.search?.[0]?.title;
     if (!title) return '';
-    const sum = await fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`).then((r) => r.json());
+    const sum = await fetch(`https://${idioma}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`).then((r) => r.json());
     return sum.extract || '';
   } catch { return ''; }
 }

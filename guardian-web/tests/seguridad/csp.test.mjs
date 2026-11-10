@@ -61,7 +61,7 @@ test('la CSP permite hablar con el Supabase configurado (datos y tiempo real)', 
 });
 
 test('la CSP permite descargar los modelos de IA y consultar Wikipedia', () => {
-  for (const u of ['https://tfhub.dev/x', 'https://www.kaggle.com/x', 'https://storage.googleapis.com/x', 'https://es.wikipedia.org/w/api.php']) {
+  for (const u of ['https://tfhub.dev/x', 'https://www.kaggle.com/x', 'https://storage.googleapis.com/x', 'https://es.wikipedia.org/w/api.php', 'https://en.wikipedia.org/w/api.php']) {
     assert.ok(permite('connect-src', u), u);
   }
 });
