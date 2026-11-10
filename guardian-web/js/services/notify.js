@@ -2,6 +2,7 @@
    GUARDIÁN · Sonido y notificaciones del sistema
    ========================================================= */
 import { settings } from './settings.js';
+import { t } from '../core/i18n.js';
 
 let audioCtx = null;
 export function beep(kind = 'alert') {
@@ -27,6 +28,7 @@ export function askNotificationPermission() {
 
 export async function systemNotify(title, body, tag) {
   if (!settings.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
+  title = t(title); body = t(body);
   try {
     const reg = await navigator.serviceWorker?.getRegistration();
     if (reg) reg.showNotification(title, { body, tag, icon: 'assets/icon-192.png', badge: 'assets/icon-192.png', vibrate: [200, 100, 200] });

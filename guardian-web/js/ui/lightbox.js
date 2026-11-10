@@ -7,6 +7,7 @@
    ========================================================= */
 import { esc } from '../core/dom.js';
 import { icon } from './icons.js';
+import { t } from '../core/i18n.js';
 
 export function openLightbox(items, start = 0) {
   if (!items?.length) return;
@@ -54,9 +55,9 @@ export function openLightbox(items, start = 0) {
     boxes.forEach((b) => {
       const [x, y, w, h] = b.bbox;
       ctx.strokeStyle = b.color; ctx.strokeRect(x, y, w, h);
-      const tw = ctx.measureText(b.label).width + 10;
+      const tw = ctx.measureText(t(b.label)).width + 10;
       ctx.fillStyle = b.color; ctx.fillRect(x, Math.max(0, y - fs - 8), tw, fs + 8);
-      ctx.fillStyle = '#0a0d0b'; ctx.fillText(b.label, x + 5, Math.max(fs, y - 6));
+      ctx.fillStyle = '#0a0d0b'; ctx.fillText(t(b.label), x + 5, Math.max(fs, y - 6));
     });
   }
   const close = () => { el.remove(); document.removeEventListener('keydown', onKey); };

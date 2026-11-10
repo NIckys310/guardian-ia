@@ -1,6 +1,8 @@
 /* =========================================================
    GUARDIÁN · Tema de las gráficas (Chart.js) según los colores de la app
    ========================================================= */
+import { idioma, t } from '../core/i18n.js';
+
 export const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 export function chartTheme() {
@@ -18,4 +20,10 @@ export function chartTheme() {
   Chart.defaults.plugins.tooltip.padding = 10;
   Chart.defaults.plugins.tooltip.cornerRadius = 8;
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  if (idioma === 'en' && !Chart.registry.plugins.items.idioma) {
+    Chart.register({ id: 'idioma', beforeUpdate(c) {
+      c.data.labels = (c.data.labels || []).map(t);
+      c.data.datasets.forEach((d) => { if (d.label) d.label = t(d.label); });
+    } });
+  }
 }
