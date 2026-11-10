@@ -1,0 +1,96 @@
+/* =========================================================
+   GUARDIÁN · Fichas de especies en inglés
+   id: [nombre, hábitat, reproducción, alimentación, distribución]
+   ========================================================= */
+export const ESPECIES_EN = {
+  puma: ['Puma', 'From páramos and Andean forests to lowland jungles and savannas.', 'Gestation of about 92 days; 1 to 4 spotted cubs whose markings fade as they grow.', 'Carnivore: deer, capybaras, peccaries, armadillos and large birds.', 'The entire American continent; in Colombia, the three mountain ranges and the Orinoquía.'],
+  ocelote: ['Ocelot', 'Humid jungles, gallery forests and mangroves with dense vegetation.', 'Gestation of 79 to 85 days; usually a single young every two years.', 'Carnivore: rodents, opossums, birds, reptiles and fish.', 'From the southern United States to northern Argentina; Amazon, Chocó and Middle Magdalena.'],
+  tigrillo: ['Oncilla', 'Cloud and Andean forests between 1,500 and 3,500 m.', 'Gestation of about 75 days; 1 or 2 young.', 'Carnivore: small rodents, birds and lizards.', 'Andes of Colombia, Venezuela, Ecuador and Peru.'],
+  danta: ['Mountain tapir', 'Páramos and high Andean forests between 2,000 and 4,000 m.', 'Gestation of about 13 months; a single white-striped calf.', 'Herbivore: leaves, shoots, fruit and páramo plants. A great seed disperser.', 'Central and Eastern ranges of Colombia, Ecuador and northern Peru.'],
+  venado: ['White-tailed deer', 'Savannas, dry forests, forest edges and páramos.', 'Gestation of about 200 days; 1 or 2 spotted fawns.', 'Herbivore: leaves, grasses, fruit and shoots.', 'From Canada to Bolivia; in Colombia, the Orinoquía, Caribbean and Andean regions.'],
+  pecari: ['Collared peccary', 'Jungles, dry forests and wooded savannas.', 'Gestation of about 145 days; usually 2 young.', 'Omnivore: roots, fruit, seeds, insects and small vertebrates.', 'From the southern United States to Argentina; most of Colombia below 2,000 m.'],
+  chiguiro: ['Capybara', 'Flooded plains, rivers, lagoons and marshes.', 'Gestation of about 150 days; 2 to 8 young that swim from an early age.', 'Herbivore: grasses and aquatic plants.', 'South America east of the Andes; very common in the Eastern Plains.'],
+  hormiguero: ['Giant anteater', 'Savannas, grasslands and open forests.', 'Gestation of about 190 days; one young that rides on its mother\'s back.', 'Insectivore: up to 30,000 ants and termites a day with its 60 cm tongue.', 'From Central America to Argentina; in Colombia, the Orinoquía and Amazon.'],
+  armadillo: ['Nine-banded armadillo', 'Forests, savannas and farmland; lives in burrows.', 'Almost always 4 identical young (quadruplets) from a single egg.', 'Insectivore: ants, termites, larvae and earthworms.', 'From the United States to Argentina; all of Colombia below 3,000 m.'],
+  zarigueya: ['Opossum', 'Forests, rural areas and even cities.', 'Marsupial: the young finish growing in the mother\'s pouch; up to 10 per litter.', 'Omnivore: fruit, insects, eggs and small animals. Eats ticks.', 'From Mexico to Argentina; all of Colombia.'],
+  puercoespin: ['Porcupine', 'Humid and dry forests; lives in trees.', 'Gestation of about 200 days; one young with soft quills.', 'Herbivore: leaves, bark, fruit and seeds.', 'Northern South America; in Colombia below 2,000 m.'],
+  ardilla: ['Red-tailed squirrel', 'Forests, parks and crops, from sea level up to 3,000 m.', 'Gestation of about 44 days; 1 to 3 young in leaf nests.', 'Fruit, seeds, nuts and sometimes insects.', 'From Costa Rica to Ecuador; very common in Colombia.'],
+  murcielago: ['Fruit bat', 'Humid and dry forests; roosts in caves, trunks and buildings.', 'Two births a year, one young each.', 'Fruit (piper, guava, figs). Disperses seeds and regenerates the forest.', 'From Mexico to Brazil; all of Colombia below 2,000 m.'],
+  aullador: ['Red howler monkey', 'Humid jungles, gallery forests and low Andean forests.', 'Gestation of about 190 days; one young.', 'Herbivore: leaves, fruit and flowers.', 'Northern South America; in Colombia, almost the entire country below 2,500 m. Its howl carries 5 km.'],
+  titi: ['Cotton-top tamarin', 'Tropical dry and humid forests of the Colombian Caribbean.', 'Twins are common; the father and the group carry the young.', 'Insects, fruit, nectar and tree exudates.', 'Endemic to Colombia: Córdoba, Sucre, Bolívar, Atlántico and Antioquia.'],
+  capuchino: ['Capuchin monkey', 'Humid jungles and gallery forests.', 'Gestation of about 160 days; one young.', 'Omnivore: fruit, insects, eggs and small vertebrates. Uses tools.', 'Amazon, Orinoquía and the Magdalena valley.'],
+  arana: ['Brown spider monkey', 'Humid forests of the Magdalena valley and the Serranía de San Lucas.', 'Gestation of about 7 months; one young every 3 or 4 years (which is why it recovers slowly).', 'Frugivore: ripe fruit, leaves and flowers.', 'Colombia and Venezuela. One of the most threatened primates in the world.'],
+  condor: ['Andean condor', 'Páramos, canyons and mountains of the Andes.', 'Lays a single egg every 2 years; both parents incubate for 55 days.', 'Scavenger: carcasses of large animals.', 'Andes from Venezuela to Patagonia. National bird of Colombia.'],
+  arpia: ['Harpy eagle', 'Large, little-disturbed humid jungles.', 'Lays 1 or 2 eggs every 2 or 3 years; raises only one chick.', 'Sloths and monkeys hunted in the treetops.', 'From Mexico to Argentina; Amazon, Chocó and Middle Magdalena.'],
+  gallito: ['Andean cock-of-the-rock', 'Cloud forest canyons and ravines.', 'Males dance in groups (leks); the female builds a mud nest on the rocks.', 'Fruit, insects and small reptiles.', 'Andes from Venezuela to Bolivia.'],
+  barranquero: ['Andean motmot', 'Andean forests, coffee farms and parks.', 'Nests in tunnels it digs in banks; 3 or 4 eggs.', 'Insects, lizards and fruit.', 'Andes of Colombia, Ecuador and Peru.'],
+  garza: ['Great egret', 'Swamps, rivers, lagoons, mangroves and flooded pastures.', 'Nests in tree colonies; 3 or 4 bluish eggs.', 'Fish, frogs, insects and small reptiles.', 'Almost worldwide; very common in Colombia.'],
+  pelicano: ['Brown pelican', 'Coasts, bays, mangroves and estuaries.', 'Nests in colonies; 2 or 3 eggs.', 'Fish caught by plunge-diving into the sea.', 'Coasts of the Americas; Colombian Caribbean and Pacific shores.'],
+  martin: ['Kingfisher', 'Rivers, lakes and mangroves with perches over the water.', 'Nests in tunnels in riverbanks; 3 to 6 eggs.', 'Small fish caught by diving.', 'From Mexico to Tierra del Fuego.'],
+  loro: ['Yellow-crowned parrot', 'Jungles, gallery forests and wooded savannas.', 'Nests in tree hollows; 2 to 4 eggs. A frequent victim of illegal trafficking.', 'Fruit, seeds, flowers and nuts.', 'Northern South America; Colombian Caribbean, Orinoquía and Amazon.'],
+  charapa: ['Giant South American river turtle', 'Large rivers of the Amazon and Orinoquía; nests on sandy beaches.', 'Each female lays 80 to 120 eggs in the sand during the dry season.', 'Herbivore: fruit, seeds and aquatic plants.', 'Amazon and Orinoco basins. The largest river turtle in South America.'],
+  carey: ['Hawksbill turtle', 'Coral reefs and tropical coasts.', 'Nests every 2 or 3 years on beaches; about 140 eggs per nest.', 'Sea sponges, algae and anemones.', 'Tropical oceans; Colombian Caribbean (San Andrés, Tayrona) and Pacific.'],
+  'caiman-orinoco': ['Orinoco crocodile', 'Rivers and lagoons of the Eastern Plains.', 'Lays 15 to 70 eggs on beaches; the mother protects the young.', 'Fish, birds and mammals that come near the water.', 'Endemic to the Orinoco basin (Colombia and Venezuela).'],
+  boa: ['Boa constrictor', 'Jungles, dry forests, savannas and farmland.', 'Viviparous: 10 to 60 young are born.', 'Rodents, birds and reptiles killed by constriction. Not venomous.', 'From Mexico to Argentina; all of Colombia below 1,500 m.'],
+  anaconda: ['Anaconda', 'Slow rivers, swamps and marshes.', 'Viviparous: 20 to 40 young of about 70 cm.', 'Fish, birds, capybaras and caimans.', 'Amazon and Orinoquía. The heaviest snake in the world.'],
+  coral: ['Coral snake', 'Leaf litter of jungles and forests.', 'Oviparous: 3 to 12 eggs.', 'Other snakes and lizards. ⚠️ Highly venomous: do not touch it.', 'All of Colombia below 2,000 m.'],
+  'rana-dorada': ['Golden poison frog', 'Humid jungle floor of the Pacific.', 'The male carries the tadpoles on its back to the water.', 'Ants and small insects.', 'Endemic to the Colombian Cauca. Its skin is among the most toxic on the planet.'],
+  sapo: ['Cane toad', 'Almost any damp place: pastures, gardens and riverbanks.', 'Lays up to 30,000 eggs in strings in the water.', 'Insects and other invertebrates.', 'From Mexico to the Amazon; all of Colombia below 2,000 m.'],
+  'delfin-rosado': ['Pink river dolphin', 'Rivers, lakes and flooded forests of the Amazon and Orinoquía.', 'Gestation of about 11 months; one calf every 3 to 5 years.', 'Fish, crabs and small turtles.', 'Amazon and Orinoco basins; in Colombia, Puerto Nariño and Puerto Carreño.'],
+  manati: ['Caribbean manatee', 'Slow rivers, swamps and coasts with seagrass.', 'Gestation of about 12 months; one calf that stays 2 years with its mother.', 'Herbivore: aquatic plants, up to 10% of its weight per day.', 'Caribbean and the Magdalena, Sinú and Atrato basins.'],
+  martillo: ['Hammerhead shark', 'Coastal waters and seamounts; forms large schools.', 'Viviparous: 12 to 40 young.', 'Fish, squid and rays.', 'Tropical seas; Colombia\'s Malpelo Sanctuary is famous for its schools.'],
+  ballena: ['Humpback whale', 'Open ocean; comes to warm coastal waters to breed.', 'Gestation of 11 months; one calf. They reach the Colombian Pacific from July to October.', 'Krill and small fish filtered through its baleen.', 'All oceans; Bahía Solano, Nuquí and Bahía Málaga in Colombia.'],
+  mariposa: ['Blue morpho butterfly', 'Humid jungles and gallery forests.', 'Egg, caterpillar, chrysalis and adult; the cycle lasts about 115 days.', 'Caterpillars eat leaves; adults, fermented fruit.', 'From Mexico to Colombia and Venezuela. Colombia has more butterfly species than any other country.'],
+  abeja: ['Honey bee', 'Wildflowers, crops and gardens.', 'A queen lays up to 2,000 eggs a day in the hive.', 'Nectar and pollen. A key pollinator of crops.', 'Worldwide.'],
+  hormiga: ['Leafcutter ant', 'Jungles and crops; huge underground nests.', 'Nuptial flights at the start of the rains; queens found new colonies.', 'They farm a fungus with the leaves they cut.', 'From Mexico to Bolivia; all of Colombia below 2,000 m.'],
+  tarantula: ['Tarantula', 'Burrows in the ground, trunks and bromeliads.', 'The female guards a sac of hundreds of eggs.', 'Insects, frogs and lizards.', 'Tropical regions; many species in Colombia.'],
+  escorpion: ['Scorpion', 'Under stones, trunks and leaf litter.', 'Viviparous: the mother carries the young on her back.', 'Insects and spiders. ⚠️ Some species are dangerous.', 'All of Colombia in warm and temperate areas.'],
+  jaguar: ['Jaguar', 'Humid jungles, dry forests, mangroves and flooded plains, always near water.', 'No fixed season. Gestation of about 100 days; 1 to 4 cubs that stay with the mother for up to 2 years.', 'Carnivore: capybaras, peccaries, deer, caimans, turtles and fish. Its bite can pierce shells.', 'From northern Mexico to northern Argentina; Colombian Amazon and Orinoquía.'],
+  tigre: ['Tiger', 'Tropical forests, mangroves, tall grasslands and boreal forests.', 'Gestation of 100 to 110 days; litters of 2 to 4 young.', 'Carnivore: deer, wild boar and buffalo.', 'India, Nepal, Bangladesh, Southeast Asia and the Russian Far East.'],
+  leon: ['Lion', 'Savannas, grasslands and open scrub.', 'Gestation of about 110 days; 2 to 4 cubs raised by the females of the pride.', 'Carnivore: wildebeest, zebras, buffalo and antelopes; hunts in groups.', 'Sub-Saharan Africa and the Gir forest in India.'],
+  leopardo: ['Leopard', 'Very adaptable: jungles, savannas, mountains and deserts.', 'Gestation of 90 to 105 days; 2 or 3 young hidden in caves or thickets.', 'Opportunistic carnivore: antelopes, monkeys, birds; hauls prey up trees.', 'Sub-Saharan Africa and parts of Asia.'],
+  guepardo: ['Cheetah', 'Open savannas and dry grasslands.', 'Gestation of about 93 days; 3 to 5 cubs.', 'Carnivore: gazelles and impalas, hunted at great speed.', 'Eastern and southern Africa; a small population in Iran.'],
+  elefante: ['Elephant', 'Savannas, forests and swampy areas with available water.', 'Gestation of 22 months, the longest of any land mammal; one calf.', 'Herbivore: grasses, bark, fruit and roots; up to 150 kg a day.', 'Sub-Saharan Africa, India and Southeast Asia.'],
+  cebra: ['Zebra', 'Savannas and grasslands with access to water.', 'Gestation of 12 to 13 months; a foal that walks within an hour of birth.', 'Herbivore: tall, tough grasses.', 'Eastern and southern Africa.'],
+  jirafa: ['Giraffe', 'Savannas and open woodlands with acacias.', 'Gestation of about 15 months; the calf is about 1.8 m tall at birth.', 'Herbivore: leaves of acacia and other tall trees.', 'Sub-Saharan Africa.'],
+  oso: ['Bear', 'Forests, mountains and tundra depending on the species. The spectacled bear lives in Colombia\'s páramos.', 'Delayed implantation; cubs are born during hibernation or in dens.', 'Omnivore: fruit, roots, insects, honey, fish and carrion.', 'The Americas, Europe and Asia; the spectacled bear in the Andes.'],
+  perezoso: ['Three-toed sloth', 'Canopies of tropical humid jungles.', 'Gestation of about 6 months; one young that rides on its mother.', 'Herbivore: leaves, shoots and flowers (Cecropia).', 'Central America and northern South America, including Colombia.'],
+  tucan: ['Toucan', 'Tropical jungles and forest edges.', 'Nests in tree hollows; lays 2 to 4 eggs.', 'Mainly fruit; also insects, eggs and small reptiles.', 'From Mexico to Argentina; very diverse in Colombia.'],
+  guacamayo: ['Macaw', 'Humid jungles, palm groves and riverbanks.', 'Mates for life; 2 or 3 eggs in palm cavities.', 'Seeds, nuts, fruit; eats clay to neutralize toxins.', 'Tropical Central and South America.'],
+  colibri: ['Hummingbird', 'From jungles to páramos; Colombia has more than 160 species.', 'Tiny nests of moss and spider silk; 2 eggs.', 'Flower nectar and small insects.', 'Found only in the Americas.'],
+  flamenco: ['Flamingo', 'Brackish lagoons, salt flats and shallow coasts.', 'Huge colonies; one egg on a mud mound.', 'Filter feeder: algae and crustaceans that give it its pink color.', 'Caribbean (including La Guajira), Andes, Africa, Europe and Asia.'],
+  aguila: ['Eagle', 'Mountains, forests and coasts.', 'Large nests in trees or on cliffs; 1 to 3 eggs.', 'Carnivore: fish, small mammals and birds.', 'Every continent except Antarctica.'],
+  buho: ['Owl', 'Forests, deserts, cities and mountains.', 'Nests in hollows or abandoned nests; 2 to 6 eggs.', 'Rodents, insects, small birds; silent night hunter.', 'Worldwide.'],
+  tortuga: ['Turtle', 'Oceans, rivers, lagoons and forests depending on the species.', 'Buries its eggs; the sand temperature determines the sex of the young.', 'Jellyfish, algae, seagrass, fruit or invertebrates.', 'Worldwide; sea turtles nest on the Colombian Caribbean and Pacific coasts.'],
+  iguana: ['Green iguana', 'Tropical forests near rivers.', 'Buries 20 to 70 eggs.', 'Herbivore: leaves, flowers and fruit.', 'Central America, South America and the Caribbean.'],
+  cocodrilo: ['Crocodile / Caiman', 'Rivers, swamps and mangroves.', 'Nests of vegetation or sand; the mother protects the young.', 'Carnivore: fish, birds and mammals.', 'Tropical areas worldwide; the Orinoquía and Caribbean coast in Colombia.'],
+  rana: ['Frog', 'Damp areas, forests and bodies of water.', 'Eggs in water; metamorphosis from tadpole to adult.', 'Insects and other invertebrates.', 'Worldwide; Colombia ranks 2nd in amphibian species.'],
+  gorila: ['Gorilla', 'Tropical jungles and mountain forests.', 'Gestation of 8.5 months; one young every 4 years.', 'Herbivore: leaves, stems and fruit.', 'Central Africa.'],
+  chimpance: ['Chimpanzee', 'Jungles and wooded savannas.', 'Gestation of 8 months; the young depends on its mother for about 5 years.', 'Omnivore: fruit, leaves, insects and sometimes meat.', 'Western and Central Africa.'],
+  orangutan: ['Orangutan', 'Lowland tropical jungles.', 'One young every 6 to 8 years, the longest interval among mammals.', 'Fruit, leaves, bark and insects.', 'Borneo and Sumatra.'],
+  lobo: ['Wolf', 'Forests, tundra, mountains and grasslands.', 'One dominant pair per pack; 4 to 6 cubs.', 'Carnivore: deer, moose and smaller prey.', 'North America, Europe and Asia.'],
+  zorro: ['Fox', 'Forests, grasslands, mountains and urban areas.', 'Litters of 3 to 6 young in dens.', 'Omnivore: rodents, fruit, insects and birds.', 'Almost worldwide; in Colombia, the crab-eating fox.'],
+  tiburon: ['Shark', 'Oceans worldwide; Malpelo is a sanctuary in Colombia.', 'Depending on the species: oviparous, viviparous or ovoviviparous.', 'Fish, squid, seals and plankton.', 'All oceans.'],
+  panda: ['Giant panda', 'Mountain bamboo forests.', 'One or two tiny cubs; the female is fertile only 2 or 3 days a year.', 'Almost exclusively bamboo.', 'Central China.'],
+  koala: ['Koala', 'Eucalyptus forests.', 'Marsupial: the joey lives 6 months in the pouch.', 'Eucalyptus leaves.', 'Eastern Australia.'],
+  hipopotamo: ['Hippopotamus', 'Rivers and lakes. Colombia has an invasive population in the Middle Magdalena.', 'Gestation of 8 months; the calf is born underwater.', 'Herbivore: grasses eaten at night.', 'Sub-Saharan Africa (invasive in Colombia).'],
+  nutria: ['Otter', 'Rivers, lakes and coasts.', 'Litters of 1 to 5 young in dens.', 'Fish, crustaceans and mollusks.', 'Worldwide except Australia; Amazon and Orinoquía.'],
+  mono: ['Monkey', 'Tropical jungles and forests.', 'Usually one young per birth.', 'Fruit, leaves, insects.', 'Tropical areas of the Americas, Africa and Asia.'],
+  perro: ['Dog', 'Lives with humans all over the world.', 'Gestation of about 63 days; litters of 1 to 12 puppies.', 'Omnivore adapted to the human diet.', 'Worldwide.'],
+  gato: ['Cat', 'Lives with humans; can become feral.', 'Gestation of about 65 days; 3 to 5 kittens.', 'Strict carnivore.', 'Worldwide.'],
+  caballo: ['Horse', 'Grasslands and farms.', 'Gestation of 11 months; one foal.', 'Herbivore: grass and hay.', 'Worldwide.'],
+  vaca: ['Cow', 'Farms and pastures.', 'Gestation of 9 months; one calf.', 'Ruminant herbivore.', 'Worldwide.'],
+  oveja: ['Sheep', 'Farms and mountain areas.', 'Gestation of 5 months; 1 or 2 lambs.', 'Ruminant herbivore.', 'Worldwide.'],
+  ave: ['Bird (species to be confirmed)', 'Use the advanced AI to identify the exact species.', 'Oviparous: they lay hard-shelled eggs.', 'Varies by species.', 'Worldwide.']
+};
+
+/** Convierte las fichas en parejas 'texto en español': 'texto en inglés'. */
+export function fichasEnIngles(especies) {
+  const dic = {};
+  for (const s of especies) {
+    const en = ESPECIES_EN[s.id];
+    if (!en) continue;
+    [s.nombre, s.habitat, s.reproduccion, s.dieta, s.distribucion].forEach((es, i) => { dic[es] = en[i]; });
+  }
+  return dic;
+}
