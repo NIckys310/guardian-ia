@@ -1,6 +1,7 @@
 /* =========================================================
    GUARDIÁN · Utilidades generales
    ========================================================= */
+import { LOCALE } from './i18n.js';
 export const $ = (s, r = document) => r.querySelector(s);
 export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
@@ -22,7 +23,7 @@ export function slug(s) {
 export const nowISO = () => new Date().toISOString();
 export const ms = (t) => (typeof t === 'number' ? t : Date.parse(t) || 0);
 export function fmtDate(t, opts = { dateStyle: 'medium', timeStyle: 'short' }) {
-  return t ? new Date(ms(t)).toLocaleString('es-CO', opts) : '—';
+  return t ? new Date(ms(t)).toLocaleString(LOCALE, opts) : '—';
 }
 export function fmtDay(t) { return fmtDate(t, { day: 'numeric', month: 'short', year: 'numeric' }); }
 export function fmtRel(t) {
@@ -54,12 +55,12 @@ export function animateCount(el, to, dur = 700) {
   if (!el) return;
   const from = Number(el.dataset.v || 0);
   el.dataset.v = to;
-  if (from === to || matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = to.toLocaleString('es-CO'); return; }
+  if (from === to || matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = to.toLocaleString(LOCALE); return; }
   const t0 = performance.now();
   const step = (t) => {
     const k = Math.min(1, (t - t0) / dur);
     const e = 1 - Math.pow(1 - k, 3);
-    el.textContent = Math.round(from + (to - from) * e).toLocaleString('es-CO');
+    el.textContent = Math.round(from + (to - from) * e).toLocaleString(LOCALE);
     if (k < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);

@@ -13,8 +13,9 @@ import { openModal, confirmDialog } from '../ui/modal.js';
 import { plan, isPro, loadPlan, loadPlans, paymentHistory, startCheckout, waitForActivation, simularPago, cancelarPrueba } from '../services/plan.js';
 import { DATOS_PRUEBA, METODOS, PASOS, nombreMetodo, esPagoDePrueba, enmascarar, pesos, correoDeConfirmacion } from '../services/pago-prueba.js';
 import { auth } from '../services/auth.js';
+import { LOCALE } from '../core/i18n.js';
 
-const cop = (n) => '$' + Number(n).toLocaleString('es-CO');
+const cop = (n) => '$' + Number(n).toLocaleString(LOCALE);
 const STATUS = { APPROVED: ['ok', 'Aprobado'], PENDING: ['warn', 'Pendiente'], DECLINED: ['err', 'Rechazado'], VOIDED: ['err', 'Anulado'], ERROR: ['err', 'Error'] };
 const espera = (ms) => new Promise((r) => setTimeout(r, ms));
 

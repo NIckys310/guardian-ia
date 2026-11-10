@@ -12,6 +12,7 @@ import { active, insert, update, moveToTrash, restore, messagesOf, addMessage, d
 import { claude, chatStream, checkClaude } from '../services/ai-cloud.js';
 import { auth } from '../services/auth.js';
 import { countUse } from '../services/plan.js';
+import { LOCALE } from '../core/i18n.js';
 
 const SUGGESTIONS = [
   '¿Qué especie vi más esta semana?',
@@ -168,13 +169,13 @@ function stationContext() {
   const count = (rows) => Object.entries(rows.reduce((a, s) => { a[s.nombre] = (a[s.nombre] || 0) + 1; return a; }, {})).sort((a, b) => b[1] - a[1]).slice(0, 15);
   const alerts = active('alert');
   return {
-    fecha_actual: new Date().toLocaleString('es-CO'),
+    fecha_actual: new Date().toLocaleString(LOCALE),
     total_avistamientos: active('sighting').length,
     especies_ultimos_7_dias: count(s30.filter((s) => ms(s.created_at) >= d7)),
     especies_ultimos_30_dias: count(s30),
     especies_amenazadas_vistas: [...new Set(active('sighting').filter((s) => ['cr', 'vu'].includes(conservClass(s.estado))).map((s) => `${s.nombre} (${s.estado})`))].slice(0, 20),
-    ultimos_avistamientos: active('sighting').slice(0, 8).map((s) => ({ especie: s.nombre, fecha: new Date(ms(s.created_at)).toLocaleString('es-CO'), confianza: Math.round(s.conf * 100) + '%' })),
-    alertas_pendientes: alerts.filter((a) => !a.atendida).slice(0, 10).map((a) => ({ tipo: a.tipo, mensaje: a.mensaje, fecha: new Date(ms(a.created_at)).toLocaleString('es-CO') })),
+    ultimos_avistamientos: active('sighting').slice(0, 8).map((s) => ({ especie: s.nombre, fecha: new Date(ms(s.created_at)).toLocaleString(LOCALE), confianza: Math.round(s.conf * 100) + '%' })),
+    alertas_pendientes: alerts.filter((a) => !a.atendida).slice(0, 10).map((a) => ({ tipo: a.tipo, mensaje: a.mensaje, fecha: new Date(ms(a.created_at)).toLocaleString(LOCALE) })),
     alertas_total: alerts.length,
     dispositivos_vinculados: data.devices.filter((d) => !d.revoked_at).map((d) => d.nombre)
   };

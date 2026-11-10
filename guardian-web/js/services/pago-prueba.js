@@ -4,6 +4,7 @@
    ficticios. Los pagos reales (Wompi) se activarán cuando lo autorice
    el profesor; en ese momento el modo prueba se apaga solo.
    ========================================================= */
+import { LOCALE } from '../core/i18n.js';
 
 /** Datos ficticios que se muestran en la pasarela de prueba (no se pueden cambiar). */
 export const DATOS_PRUEBA = Object.freeze({
@@ -37,11 +38,11 @@ export const PASOS = [
 /** Esconde la cuenta como en un banco: •••• 3333 */
 export const enmascarar = (numero) => '•••• ' + String(numero).replace(/\D/g, '').slice(-4);
 
-export const pesos = (centavos) => '$' + Math.round(Number(centavos) / 100).toLocaleString('es-CO');
+export const pesos = (centavos) => '$' + Math.round(Number(centavos) / 100).toLocaleString(LOCALE);
 
 /** Texto del correo de confirmación SIMULADO (no se envía a ningún correo real). */
 export function correoDeConfirmacion({ reference, amount_cents, metodo, vence, aprobado }, nombre = DATOS_PRUEBA.titular) {
-  const fecha = (t) => new Date(t).toLocaleString('es-CO', { dateStyle: 'long', timeStyle: 'short' });
+  const fecha = (t) => new Date(t).toLocaleString(LOCALE, { dateStyle: 'long', timeStyle: 'short' });
   return {
     para: DATOS_PRUEBA.correo,
     asunto: `[PRUEBA] Guardián Pro activado · ${reference}`,

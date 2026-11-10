@@ -9,6 +9,7 @@ import { groupBadge, conservChip } from '../ui/species-ui.js';
 import { active, data, photoURL } from '../services/repo.js';
 import { auth } from '../services/auth.js';
 import { chartTheme, cssVar } from '../ui/charts.js';
+import { LOCALE } from '../core/i18n.js';
 
 let chart = null;
 
@@ -32,7 +33,7 @@ export function show() { render(); }
 async function render() {
   const now = new Date();
   const h = now.getHours();
-  $('#heroDate').textContent = now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  $('#heroDate').textContent = now.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   $('#heroHello').textContent = auth.user && !auth.isDevice ? `${saludo}, ${auth.displayName.split(' ')[0]}` : `${saludo}, guardaparques`;
 
@@ -61,7 +62,7 @@ async function render() {
   if (chart) {
     const days = [...Array(7)].map((_, i) => { const d = new Date(today0); d.setDate(d.getDate() - (6 - i)); return d; });
     const cnt = (arr, d) => arr.filter((x) => ms(x.created_at) >= d.getTime() && ms(x.created_at) < d.getTime() + 864e5).length;
-    chart.data.labels = days.map((d) => d.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric' }));
+    chart.data.labels = days.map((d) => d.toLocaleDateString(LOCALE, { weekday: 'short', day: 'numeric' }));
     chart.data.datasets[0].data = days.map((d) => cnt(sightings, d));
     chart.data.datasets[1].data = days.map((d) => cnt(alerts, d));
     chart.update();

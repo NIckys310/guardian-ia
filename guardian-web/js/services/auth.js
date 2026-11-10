@@ -9,6 +9,7 @@
 import { CONFIG, cloudConfigured } from '../config.js';
 import { getClient, sb, friendlyError } from './cloud.js';
 import { bus } from '../core/bus.js';
+import { LOCALE } from '../core/i18n.js';
 
 export const auth = {
   session: null,
@@ -157,7 +158,7 @@ export async function mfaEnroll() {
   // Limpia intentos de registro que quedaron a medias
   const { data: list } = await c.auth.mfa.listFactors();
   for (const f of (list?.all || []).filter((x) => x.status !== 'verified')) await c.auth.mfa.unenroll({ factorId: f.id });
-  const { data, error } = await c.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Guardián ' + new Date().toLocaleDateString('es-CO') });
+  const { data, error } = await c.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Guardián ' + new Date().toLocaleDateString(LOCALE) });
   if (error) return { ok: false, error: friendlyError(error) };
   return { ok: true, factorId: data.id, qr: data.totp.qr_code, uri: data.totp.uri, secret: data.totp.secret };
 }

@@ -9,6 +9,7 @@ import { GROUPS, groupOf } from '../data/groups.js';
 import { active } from '../services/repo.js';
 import { groupBadge, conservChip, groupOptions, findSpecies } from '../ui/species-ui.js';
 import { chartTheme, cssVar } from '../ui/charts.js';
+import { LOCALE } from '../core/i18n.js';
 
 let range = 7, group = '', speciesFilter = '', charts = {};
 
@@ -175,11 +176,11 @@ function timeBuckets(days) {
   }
   if (days && days <= 31) {
     const ds = [...Array(days)].map((_, i) => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (days - 1 - i)); return d; });
-    return { label: 'por día', labels: ds.map((d) => d.toLocaleDateString('es-CO', days <= 7 ? { weekday: 'short', day: 'numeric' } : { day: 'numeric', month: 'short' })),
+    return { label: 'por día', labels: ds.map((d) => d.toLocaleDateString(LOCALE, days <= 7 ? { weekday: 'short', day: 'numeric' } : { day: 'numeric', month: 'short' })),
       count: (arr) => ds.map((d) => arr.filter((x) => ms(x.created_at) >= d.getTime() && ms(x.created_at) < d.getTime() + 864e5).length) };
   }
   const n = days ? 12 : 24;
   const ms0 = [...Array(n)].map((_, i) => new Date(now.getFullYear(), now.getMonth() - (n - 1 - i), 1));
-  return { label: 'por mes', labels: ms0.map((d) => d.toLocaleDateString('es-CO', { month: 'short', year: '2-digit' })),
+  return { label: 'por mes', labels: ms0.map((d) => d.toLocaleDateString(LOCALE, { month: 'short', year: '2-digit' })),
     count: (arr) => ms0.map((d, i) => { const end = ms0[i + 1]?.getTime() ?? Infinity; return arr.filter((x) => ms(x.created_at) >= d.getTime() && ms(x.created_at) < end).length; }) };
 }
