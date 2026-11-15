@@ -1,0 +1,37 @@
+/* Página de estado: misma paleta de Guardián, claro u oscuro según el equipo */
+:root {
+  --bg: #0a0d0b; --panel: #141a15; --line: #26302a; --text: #e8eee6; --muted: #9aa69c;
+  --ok: #8fcf5a; --warn: #e6b24a; --bad: #ef6b5b; --accent: #b6e07a;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --bg: #eef0e8; --panel: #fbfcf8; --line: #d4dacb; --text: #1b241d; --muted: #56634f;
+    --ok: #3f7a1c; --warn: #9a6a08; --bad: #b3261e; --accent: #3f7a1c; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 40px 16px 64px; }
+.kicker { font: 600 12px ui-monospace, Consolas, monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 0; }
+h1 { font-size: clamp(28px, 6vw, 40px); margin: 6px 0 8px; }
+.lead { color: var(--muted); margin: 0 0 28px; max-width: 640px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 6px; }
+.card h3 { margin: 0; font-size: 17px; }
+.card small { color: var(--muted); }
+.estado { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 6px; }
+.estado i { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+.estado.ok { color: var(--ok); } .estado.ok i { background: var(--ok); }
+.estado.lento { color: var(--warn); } .estado.lento i { background: var(--warn); }
+.estado.mal { color: var(--bad); } .estado.mal i { background: var(--bad); }
+.estado.espera i { animation: latir 1s infinite; }
+@keyframes latir { 50% { opacity: .3; } }
+.card a { color: var(--accent); font-weight: 600; }
+.acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin: 24px 0 32px; }
+button { font: 600 16px system-ui, sans-serif; padding: 12px 22px; border-radius: 999px; border: 0; cursor: pointer;
+  background: var(--accent); color: var(--bg); }
+button:disabled { opacity: .6; cursor: wait; }
+#resumen { color: var(--muted); }
+.ayuda { border-top: 1px solid var(--line); padding-top: 18px; color: var(--muted); }
+.ayuda h2 { color: var(--text); font-size: 18px; }
+@media (prefers-reduced-motion: reduce) { .estado.espera i { animation: none; } }

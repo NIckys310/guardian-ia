@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estado de las apps</title>
+<meta name="description" content="Revisa y despierta los servicios de Guardián y Time Capsule.">
+<link rel="icon" href="../assets/guardian.svg">
+<link rel="stylesheet" href="estado.css">
+</head>
+<body>
+<main>
+  <p class="kicker">Guardián · Time Capsule · Gestores</p>
+  <h1>Estado de las apps</h1>
+  <p class="lead">Esta página despierta los servicios en la nube y te dice si todo responde. Gestores no usa internet, así que siempre funciona.</p>
+
+  <div class="grid" id="servicios"></div>
+
+  <div class="acciones">
+    <button id="despertar" type="button">Despertar todo</button>
+    <span id="resumen" role="status"></span>
+  </div>
+
+  <section class="ayuda">
+    <h2>Si algo sale “En pausa”</h2>
+    <ol>
+      <li>Toca <b>Abrir Supabase</b> en esa tarjeta e inicia sesión.</li>
+      <li>Dentro del proyecto toca <b>Restore project</b> y espera 2 o 3 minutos.</li>
+      <li>Vuelve aquí y toca <b>Despertar todo</b>.</li>
+    </ol>
+    <p>Una tarea automática consulta las bases de datos todos los días para que no se vuelvan a pausar.</p>
+  </section>
+</main>
+<script type="module" src="estado.js"></script>
+</body>
+</html>
