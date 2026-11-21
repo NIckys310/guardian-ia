@@ -17,7 +17,7 @@
   /* Texto */
   --text: #e4eadf;
   --muted: #94a392;
-  --faint: #66745f;
+  --faint: #7f8d78;
 
   /* Colores de la estación */
   --olive: #8fb35a;      /* verde militar: avistamientos y estado OK */
@@ -63,10 +63,10 @@
   --line-2: #b9c3ab;
   --text: #18201a;
   --muted: #56634f;
-  --faint: #8a9584;
+  --faint: #5f6a5a;
   --olive: #557a2a;
   --olive-2: #3f5d1d;
-  --amber: #c9861a;
+  --amber: #8f5b10;
   --amber-ink: #fff8ea;
   --alert: #c8361f;
   --info: #23798f;
