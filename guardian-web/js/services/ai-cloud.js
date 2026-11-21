@@ -4,6 +4,7 @@
    al navegador. Estas funciones llaman a las Netlify Functions.
    ========================================================= */
 import { CONFIG } from '../config.js';
+import { registrar } from '../core/fallos.js';
 import { auth } from './auth.js';
 import { idioma } from '../core/i18n.js';
 
@@ -23,7 +24,7 @@ export async function checkClaude() {
     const j = await r.json();
     claude.configured = Boolean(j.configured);
     claude.model = j.model || '';
-  } catch { claude.configured = false; }
+  } catch (e) { registrar('revisar la IA', e); claude.configured = false; }
   return claude.configured;
 }
 

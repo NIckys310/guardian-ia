@@ -19,6 +19,7 @@ import { geo } from '../services/geo.js';
 import { auth } from '../services/auth.js';
 import { plan, countUse } from '../services/plan.js';
 import { LOCALE, idioma, t } from '../core/i18n.js';
+import { registrar } from '../core/fallos.js';
 
 const S = { stream: null, source: null, busy: false, timer: null, last: null, current: null, wakeLock: null,
   autoClaudeCount: 0, lastAutoClaude: 0, claudeBusy: false, hud: null };
@@ -223,7 +224,7 @@ async function analyze(auto = false, fuente) {
       showUnknown(r.preds[0]);
     }
   } catch (e) {
-    console.error(e);
+    registrar('analizar la imagen', e);
     if (!auto) toast(e.name === 'SecurityError' ? 'La cámara remota no permite leer sus imágenes (CORS). Usa una app de cámara IP que habilite CORS.' : 'Error al analizar: ' + e.message, 'err');
   } finally {
     S.busy = false;

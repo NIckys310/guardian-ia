@@ -9,6 +9,7 @@
    la primera vez; Guardián intenta reconectarse solo después.
    ========================================================= */
 import { bus } from '../core/bus.js';
+import { registrar } from '../core/fallos.js';
 
 const IMMEDIATE_ALERT = 0x1802, ALERT_LEVEL = 0x2a06;
 const UART = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
@@ -65,7 +66,7 @@ export async function reconnectBluetooth() {
   try {
     const dev = (await navigator.bluetooth.getDevices()).find((d) => d.id === saved.id);
     if (dev) await attach(dev);
-  } catch { setStatus('off'); }
+  } catch (e) { registrar('Bluetooth', e); setStatus('off'); }
 }
 
 export function disconnectBluetooth() {
