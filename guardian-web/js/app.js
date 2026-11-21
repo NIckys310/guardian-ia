@@ -8,6 +8,7 @@
 import { $, $$, enableRipples, stagger } from './core/dom.js';
 import { bus } from './core/bus.js';
 import { prepararIdioma } from './core/i18n.js';
+import { vigilar, registrar } from './core/fallos.js';
 import { hydrateIcons, icon } from './ui/icons.js';
 import { toast } from './ui/toast.js';
 import { openModal } from './ui/modal.js';
@@ -42,13 +43,15 @@ const inited = new Set();
 let current = null, started = false;
 
 /* ---------- Arranque ---------- */
+vigilar();
+
 async function boot() {
   await prepararIdioma();
   hydrateIcons();
   enableRipples();
   registerSW();
   await loadSettings();
-  try { await initAuth(); } catch (e) { console.error(e); toast('No se pudo conectar con la nube. Revisa tu internet.', 'err'); }
+  try { await initAuth(); } catch (e) { registrar('conectar con la nube', e); toast('No se pudo conectar con la nube. Revisa tu internet.', 'err'); }
   if (auth.user) await loadSettings();   // ahora con los ajustes de la cuenta
 
   const pairCode = location.hash.match(/^#\/vincular\/([A-Za-z0-9]{6})/)?.[1];
