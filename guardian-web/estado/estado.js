@@ -5,11 +5,16 @@
    - Funciones de IA en Netlify: las llama para que arranquen.
    Solo usa claves públicas ("publishable").
    ========================================================= */
+import { CONFIG } from '../js/config.js';
+
+// Guardián: la misma dirección y clave pública de la app (un solo lugar: js/config.js)
+const proyecto = (url) => new URL(url).hostname.split('.')[0];
+
 export const SERVICIOS = [
   { id: 'g-nube', app: 'Guardián', nombre: 'Base de datos', tipo: 'supabase',
-    url: 'https://jktmtdpgvjlrdxqmdbrp.supabase.co/rest/v1/species?select=id&limit=1',
-    clave: 'sb_publishable_Z33OvW2c8XZvI7G9AbgrRA_N4yqqYwi',
-    panel: 'https://supabase.com/dashboard/project/jktmtdpgvjlrdxqmdbrp' },
+    url: `${CONFIG.supabaseUrl}/rest/v1/species?select=id&limit=1`,
+    clave: CONFIG.supabaseKey,
+    panel: `https://supabase.com/dashboard/project/${proyecto(CONFIG.supabaseUrl)}` },
   { id: 'g-ia', app: 'Guardián', nombre: 'IA (Claude)', tipo: 'funcion', url: '/.netlify/functions/identify' },
   { id: 't-nube', app: 'Time Capsule', nombre: 'Base de datos', tipo: 'supabase', metodo: 'POST',
     url: 'https://frascwpukyygsaeeohnr.supabase.co/rest/v1/rpc/ping',
