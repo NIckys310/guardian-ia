@@ -40,7 +40,7 @@ import { loadPlan } from './services/plan.js';
 const VIEWS = { panel, escaner, mapa, estadisticas, registros, alertas, reportes, asistente, dispositivos, papelera, pro, ajustes };
 const DEVICE_VIEWS = ['panel', 'escaner', 'mapa', 'registros', 'alertas', 'ajustes'];
 const inited = new Set();
-let current = null, started = false;
+let current = null, started = false, transicion = null;
 
 /* ---------- Arranque ---------- */
 vigilar();
@@ -105,8 +105,12 @@ export function go(name, first = false) {
   if (!VIEWS[name]) name = 'panel';
   if (auth.isDevice && !DEVICE_VIEWS.includes(name)) name = 'escaner';
   if (name === current && !first) return;
+  // La sección actual cambia YA (no al terminar la animación): así una navegación
+  // rápida nunca se ignora ni regresa a la pantalla anterior.
+  const previo = current;
+  current = name;
   const swap = () => {
-    if (current && current !== name) VIEWS[current].hide?.();
+    if (previo && previo !== name) VIEWS[previo].hide?.();
     $$('.view').forEach((v) => v.classList.toggle('active', v.id === 'view-' + name));
     $$('[data-view]').forEach((b) => b.classList.toggle('active', b.dataset.view === name));
     const sec = $('#view-' + name);
@@ -116,11 +120,15 @@ export function go(name, first = false) {
     if (!inited.has(name)) { hydrateIcons(sec); VIEWS[name].init?.(); inited.add(name); }
     stagger(sec);
     VIEWS[name].show?.();
-    current = name;
     $('#main').scrollTop = 0;
   };
+  transicion?.skipTransition?.();     // si había una animación a medias, termina ya y en orden
+  transicion = null;
   if (document.startViewTransition && !first && settings.motion && !document.hidden) {
     const t = document.startViewTransition(swap);
+    transicion = t;
+    const limpiar = () => { if (transicion === t) transicion = null; };
+    t.finished.then(limpiar, limpiar);
     t.ready.catch(() => {});        // si el navegador cancela la animación, no es un error
     t.finished.catch(() => {});
     t.updateCallbackDone.catch(() => swap());
