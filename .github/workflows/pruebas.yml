@@ -26,3 +26,14 @@ jobs:
         run: npm run test:sintaxis
       - name: Pruebas automáticas
         run: npm test
+      - name: Navegador para las pruebas de interfaz
+        run: npx playwright install --with-deps chromium
+      - name: Pruebas de interfaz (PC y celular)
+        run: npm run test:e2e
+      - name: Guardar el informe si algo falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pruebas-de-interfaz
+          path: guardian-web/test-results/
+          if-no-files-found: ignore
