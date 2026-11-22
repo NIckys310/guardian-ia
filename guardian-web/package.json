@@ -8,12 +8,16 @@
     "dev": "netlify dev",
     "test": "node --test \"tests/**/*.test.mjs\"",
     "test:sintaxis": "node scripts/revisar-sintaxis.mjs",
-    "semilla": "node scripts/generar-semilla-especies.mjs"
+    "semilla": "node scripts/generar-semilla-especies.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0"
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
   }
 }
