@@ -23,7 +23,7 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
       - name: Revisar sintaxis
-        run: npm run test:sintaxis
+        run: npm run test:syntax
       - name: Análisis estático (ESLint)
         run: npm run lint
       - name: Pruebas automáticas

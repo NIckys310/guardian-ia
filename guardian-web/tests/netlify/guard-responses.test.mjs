@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { json, MODEL, hasKey } from '../../netlify/lib/guard.mjs';
-import { withEnv } from '../helpers/navegador.mjs';
+import { withEnv } from '../helpers/browser.mjs';
 
 test('json() responde con el código y el cuerpo en JSON', async () => {
   const r = json(418, { hola: 'mundo' });

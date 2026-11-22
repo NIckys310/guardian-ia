@@ -6,7 +6,7 @@ export default [
   { ignores: ['node_modules/', '.netlify/', 'test-results/', 'playwright-report/', 'docs/'] },
   js.configs.recommended,
   {
-    files: ['js/**/*.js', 'estado/**/*.js', 'sw.js'],
+    files: ['js/**/*.js', 'status/**/*.js', 'sw.js'],
     languageOptions: {
       ecmaVersion: 2023, sourceType: 'module',
       globals: { ...globals.browser, ...globals.serviceworker, L: 'readonly', Chart: 'readonly', tf: 'readonly', mobilenet: 'readonly', cocoSsd: 'readonly', supabase: 'readonly', qrcode: 'readonly' }

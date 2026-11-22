@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { SERVICES, verdict } from '../../estado/estado.js';
+import { SERVICES, verdict } from '../../status/status.js';
 
 const toml = readFileSync(new URL('../../netlify.toml', import.meta.url), 'utf8');
 const connectValue = toml.match(/connect-src ([^;]+);/)[1].split(/\s+/);
@@ -13,7 +13,7 @@ test('revisa las dos bases de datos y las dos IA', () => {
 
 test('solo usa claves públicas', () => {
   for (const s of SERVICES.filter((x) => x.clave)) assert.match(s.clave, /^sb_publishable_/);
-  assert.doesNotMatch(readFileSync(new URL('../../estado/estado.js', import.meta.url), 'utf8'), /service_role|sk-ant-/);
+  assert.doesNotMatch(readFileSync(new URL('../../status/status.js', import.meta.url), 'utf8'), /service_role|sk-ant-/);
 });
 
 test('la política de seguridad del sitio deja consultar cada servicio', () => {

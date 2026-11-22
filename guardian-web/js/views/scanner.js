@@ -19,7 +19,7 @@ import { geo } from '../services/geo.js';
 import { auth } from '../services/auth.js';
 import { plan, countUse } from '../services/plan.js';
 import { LOCALE, language, t } from '../core/i18n.js';
-import { logError } from '../core/fallos.js';
+import { logError } from '../core/errors.js';
 
 const S = { stream: null, source: null, busy: false, timer: null, last: null, current: null, wakeLock: null,
   autoClaudeCount: 0, lastAutoClaude: 0, claudeBusy: false, hud: null };

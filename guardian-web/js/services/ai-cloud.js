@@ -4,7 +4,7 @@
    al navegador. Estas funciones llaman a las Netlify Functions.
    ========================================================= */
 import { CONFIG } from '../config.js';
-import { logError } from '../core/fallos.js';
+import { logError } from '../core/errors.js';
 import { auth } from './auth.js';
 import { language } from '../core/i18n.js';
 

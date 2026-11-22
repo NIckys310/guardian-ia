@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import wompi from '../../netlify/functions/wompi.mjs';
-import { withEnv, fakeFetch, reply } from '../helpers/navegador.mjs';
+import { withEnv, fakeFetch, reply } from '../helpers/browser.mjs';
 
 const URL_F = 'https://guardian.test/.netlify/functions/';
 

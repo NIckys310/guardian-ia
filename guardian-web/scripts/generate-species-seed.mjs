@@ -1,7 +1,7 @@
 /* =========================================================
    Genera la migración con el catálogo de especies a partir de
    js/data/species.js y js/data/species-colombia.js.
-   Uso (desde guardian-web):  node scripts/generar-semilla-especies.mjs
+   Uso (desde guardian-web):  node scripts/generate-species-seed.mjs
    ========================================================= */
 import { writeFileSync } from 'node:fs';
 import { SPECIES } from '../js/data/species.js';
@@ -22,7 +22,7 @@ const zones = all.flatMap((s) => (s.zonas || []).map(([lat, lng, km]) => `  (${q
 
 const sql = `-- =========================================================
 -- GUARDIÁN · 13 · Catálogo de especies (${all.length} especies)
--- Archivo generado por scripts/generar-semilla-especies.mjs. No lo edites a mano.
+-- Archivo generado por scripts/generate-species-seed.mjs. No lo edites a mano.
 -- =========================================================
 insert into public.species (id, grupo, nombre, cientifico, estado, estado_code, habitat, reproduccion, dieta, distribucion) values
 ${rows.join(',\n')}

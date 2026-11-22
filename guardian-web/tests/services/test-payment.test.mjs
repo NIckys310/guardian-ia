@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { TEST_DATA, METHODS, STEPS, methodName, isTestPayment, mask, formatPesos, confirmationEmail } from '../../js/services/pago-prueba.js';
+import { TEST_DATA, METHODS, STEPS, methodName, isTestPayment, mask, formatPesos, confirmationEmail } from '../../js/services/test-payment.js';
 
 const sql = readFileSync(new URL('../../supabase/migrations/20261018000015_pagos_de_prueba.sql', import.meta.url), 'utf8');
 const view = readFileSync(new URL('../../js/views/pro.js', import.meta.url), 'utf8');

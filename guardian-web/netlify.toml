@@ -42,3 +42,13 @@
   for = "/index.html"
   [headers.values]
     Cache-Control = "no-cache"
+
+# La página de estado ahora vive en /status/; el enlace viejo sigue funcionando
+[[redirects]]
+  from = "/estado/*"
+  to = "/status/"
+  status = 301
+[[redirects]]
+  from = "/estado"
+  to = "/status/"
+  status = 301

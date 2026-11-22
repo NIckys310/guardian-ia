@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import chat from '../../netlify/functions/chat.mjs';
-import { withEnv, fakeFetch, reply } from '../helpers/navegador.mjs';
+import { withEnv, fakeFetch, reply } from '../helpers/browser.mjs';
 
 const URL_F = 'https://guardian.test/.netlify/functions/';
 const READY = { ANTHROPIC_API_KEY: 'clave-de-prueba', SUPABASE_URL: 'https://prueba.supabase.co', SUPABASE_ANON_KEY: 'anon', ALLOW_ANON_AI: undefined };

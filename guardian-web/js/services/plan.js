@@ -3,7 +3,7 @@
    El pago se hace en la página segura de Wompi (checkout.wompi.co):
    Guardián nunca ve datos de Nequi ni de tarjetas.
    Mientras no estén las claves reales, funciona el MODO PRUEBA
-   (pagos simulados, ver pago-prueba.js).
+   (pagos simulados, ver test-payment.js).
    ========================================================= */
 import { bus } from '../core/bus.js';
 import { sb, friendlyError } from './cloud.js';

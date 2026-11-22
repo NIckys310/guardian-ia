@@ -2,7 +2,7 @@
 import { execFileSync } from 'node:child_process';
 import { readdirSync } from 'node:fs';
 
-const folders = ['js', 'netlify', 'scripts', 'estado'];
+const folders = ['js', 'netlify', 'scripts', 'status'];
 const files = folders.flatMap((c) => readdirSync(c, { recursive: true })
   .filter((f) => /\.(m?js)$/.test(f)).map((f) => `${c}/${f.replaceAll('\\', '/')}`));
 files.push('sw.js');

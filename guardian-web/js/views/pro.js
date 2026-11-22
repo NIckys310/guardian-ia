@@ -11,7 +11,7 @@ import { icon } from '../ui/icons.js';
 import { toast } from '../ui/toast.js';
 import { openModal, confirmDialog } from '../ui/modal.js';
 import { plan, isPro, loadPlan, loadPlans, paymentHistory, startCheckout, waitForActivation, simulatePayment, cancelTrial } from '../services/plan.js';
-import { TEST_DATA, METHODS, STEPS, methodName, isTestPayment, mask, formatPesos, confirmationEmail } from '../services/pago-prueba.js';
+import { TEST_DATA, METHODS, STEPS, methodName, isTestPayment, mask, formatPesos, confirmationEmail } from '../services/test-payment.js';
 import { auth } from '../services/auth.js';
 import { LOCALE } from '../core/i18n.js';
 

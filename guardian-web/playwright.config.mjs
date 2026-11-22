@@ -17,7 +17,7 @@ export default defineConfig({
     { name: 'celular', use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
-    command: 'node scripts/servidor-prueba.mjs',
+    command: 'node scripts/test-server.mjs',
     url: 'http://localhost:4317',
     reuseExistingServer: !process.env.CI,
   },

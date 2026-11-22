@@ -8,7 +8,7 @@ import { loadScript } from './cloud.js';
 import { bus } from '../core/bus.js';
 import { SPECIES, COCO_ES } from '../data/species.js';
 import { COLOMBIA } from '../data/species-colombia.js';
-import { logError } from '../core/fallos.js';
+import { logError } from '../core/errors.js';
 
 export const ALL_SPECIES = [...COLOMBIA, ...SPECIES];
 export { COCO_ES };

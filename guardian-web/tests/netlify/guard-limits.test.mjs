@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { overLimit, logUsage } from '../../netlify/lib/guard.mjs';
-import { withEnv, fakeFetch, reply } from '../helpers/navegador.mjs';
+import { withEnv, fakeFetch, reply } from '../helpers/browser.mjs';
 
 const CLOUD = { SUPABASE_URL: 'https://prueba.supabase.co', SUPABASE_ANON_KEY: 'anon-prueba' };
 

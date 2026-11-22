@@ -6,7 +6,7 @@ const info = new Map();
 globalThis.localStorage = { getItem: (k) => info.get(k) ?? null, setItem: (k, v) => info.set(k, v) };
 const originalWarn = console.warn;
 console.warn = () => {};
-const { logError, recent, watchErrors } = await import('../../js/core/fallos.js');
+const { logError, recent, watchErrors } = await import('../../js/core/errors.js');
 
 test('guarda dónde pasó y el mensaje, el más reciente primero', () => {
   info.clear();

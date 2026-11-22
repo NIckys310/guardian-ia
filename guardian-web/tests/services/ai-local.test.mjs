@@ -1,6 +1,6 @@
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { fakeBrowser } from '../helpers/navegador.mjs';
+import { fakeBrowser } from '../helpers/browser.mjs';
 
 let aiHandler;
 before(async () => {
