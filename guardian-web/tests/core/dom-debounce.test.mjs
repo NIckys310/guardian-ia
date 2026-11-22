@@ -5,13 +5,13 @@ import { debounce } from '../../js/core/dom.js';
 test('debounce() espera a que dejes de escribir para buscar', () => {
   mock.timers.enable({ apis: ['setTimeout'] });
   try {
-    const llamadas = [];
-    const buscar = debounce((q) => llamadas.push(q), 250);
-    buscar('j'); buscar('ja'); buscar('jag');
+    const calls = [];
+    const search = debounce((q) => calls.push(q), 250);
+    search('j'); search('ja'); search('jag');
     mock.timers.tick(200);
-    assert.deepEqual(llamadas, []);
+    assert.deepEqual(calls, []);
     mock.timers.tick(60);
-    assert.deepEqual(llamadas, ['jag']);
+    assert.deepEqual(calls, ['jag']);
   } finally { mock.timers.reset(); }
 });
 

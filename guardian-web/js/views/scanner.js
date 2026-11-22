@@ -18,8 +18,8 @@ import { active, photoURL } from '../services/repo.js';
 import { geo } from '../services/geo.js';
 import { auth } from '../services/auth.js';
 import { plan, countUse } from '../services/plan.js';
-import { LOCALE, idioma, t } from '../core/i18n.js';
-import { registrar } from '../core/fallos.js';
+import { LOCALE, language, t } from '../core/i18n.js';
+import { logError } from '../core/fallos.js';
 
 const S = { stream: null, source: null, busy: false, timer: null, last: null, current: null, wakeLock: null,
   autoClaudeCount: 0, lastAutoClaude: 0, claudeBusy: false, hud: null };
@@ -193,7 +193,7 @@ function scheduleLoop() {
 }
 
 /* ---------- Análisis con IA local ---------- */
-async function analyze(auto = false, fuente) {
+async function analyze(auto = false, source) {
   const el = mediaEl();
   if (!el) { if (!auto) toast('Enciende la cámara o sube una foto primero'); return; }
   if (!modelsReady()) { if (!auto) toast('La IA todavía se está cargando…', 'warn'); return; }
@@ -207,7 +207,7 @@ async function analyze(auto = false, fuente) {
     drawBoxes(r.dets, w, S.last.h);
     renderPredictions(r);
     $('#msChip').textContent = `${r.ms} ms`;
-    const src = fuente || (S.source === 'ipcam' ? 'ipcam' : S.source === 'photo' ? 'foto' : auth.isDevice ? 'celular' : 'camara');
+    const src = source || (S.source === 'ipcam' ? 'ipcam' : S.source === 'photo' ? 'foto' : auth.isDevice ? 'celular' : 'camara');
 
     if (r.threat) {
       $('#viewer').classList.add('threat');
@@ -224,7 +224,7 @@ async function analyze(auto = false, fuente) {
       showUnknown(r.preds[0]);
     }
   } catch (e) {
-    registrar('analizar la imagen', e);
+    logError('analizar la imagen', e);
     if (!auto) toast(e.name === 'SecurityError' ? 'La cámara remota no permite leer sus imágenes (CORS). Usa una app de cámara IP que habilite CORS.' : 'Error al analizar: ' + e.message, 'err');
   } finally {
     S.busy = false;
@@ -268,11 +268,11 @@ function renderPredictions(r) {
 }
 
 /* ---------- Ficha ---------- */
-function showSpecies(sp, conf, fuente) {
+function showSpecies(sp, conf, source) {
   S.current = sp;
   const count = active('sighting').filter((s) => s.species_id === sp.id).length + 1;
   const panel = $('#infoPanel');
-  panel.innerHTML = plateHTML(sp, conf, fuente, count);
+  panel.innerHTML = plateHTML(sp, conf, source, count);
   panel.querySelector('[data-act="range"]').onclick = () => { bus.emit('map:range', sp); bus.emit('nav:go', 'mapa'); };
   panel.querySelector('[data-act="stats"]').onclick = () => bus.emit('nav:go', 'estadisticas');
   panel.querySelector('[data-act="ask"]').onclick = () => { bus.emit('chat:ask', `Cuéntame sobre el ${sp.nombre} (${sp.cientifico}): cómo reconocerlo, sus amenazas en Colombia y qué hacer si lo encuentro.`); bus.emit('nav:go', 'asistente'); };
@@ -297,10 +297,10 @@ async function showUnknown(pred) {
 
 async function fetchWiki(term) {
   try {
-    const s = await fetch(`https://${idioma}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(term)}&format=json&origin=*&srlimit=1`).then((r) => r.json());
+    const s = await fetch(`https://${language}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(term)}&format=json&origin=*&srlimit=1`).then((r) => r.json());
     const title = s?.query?.search?.[0]?.title;
     if (!title) return '';
-    const sum = await fetch(`https://${idioma}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`).then((r) => r.json());
+    const sum = await fetch(`https://${language}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`).then((r) => r.json());
     return sum.extract || '';
   } catch { return ''; }
 }

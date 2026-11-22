@@ -16,7 +16,7 @@ import { askNotificationPermission, beep } from '../services/notify.js';
 import { bt, btSupported, connectBluetooth, disconnectBluetooth, btNotify } from '../services/bluetooth.js';
 import { cloudConfigured } from '../config.js';
 import { plan, isPro } from '../services/plan.js';
-import { idioma, cambiarIdioma } from '../core/i18n.js';
+import { language, changeLanguage } from '../core/i18n.js';
 
 const card = (ic, title, hint, body) => `<div class="card reveal"><h4 class="card-head" style="margin:0 0 4px">${icon(ic)} ${title}</h4><p class="hint">${hint}</p>${body}</div>`;
 const sw = (id, label, help, checked, cls = '') => `<label class="switch ${cls}"><span>${label}<small>${help}</small></span><input type="checkbox" id="${id}" ${checked ? 'checked' : ''}></label>`;
@@ -44,7 +44,7 @@ async function render() {
       : auth.isDevice ? `<div class="set-row"><div><b>Celular vinculado</b><small>Para desvincularlo, usa el computador principal.</small></div><button class="btn sm danger" id="setOut">${icon('logout')}Salir</button></div>` : ''),
     card('sun', 'Apariencia', 'Elige cómo se ve Guardián.', `
       <div class="set-row"><div><b>Idioma</b><small>Español o inglés.</small></div>
-        <select class="input" id="setLang">${[['es', 'Español'], ['en', 'English']].map(([v, l]) => `<option value="${v}" ${idioma === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+        <select class="input" id="setLang">${[['es', 'Español'], ['en', 'English']].map(([v, l]) => `<option value="${v}" ${language === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       <div class="set-row"><div><b>Tema</b><small>Oscuro, claro o igual al sistema.</small></div>
         <select class="input" id="setTheme">${[['dark', 'Oscuro'], ['light', 'Claro'], ['system', 'Sistema']].map(([v, l]) => `<option value="${v}" ${s.theme === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       ${sw('setMotion', 'Animaciones', 'Desactívalas si el equipo va lento.', s.motion)}`),
@@ -74,7 +74,7 @@ async function render() {
 
 function bind() {
   const on = (id, ev, fn) => $(id)?.addEventListener(ev, fn);
-  on('#setLang', 'change', (e) => cambiarIdioma(e.target.value));
+  on('#setLang', 'change', (e) => changeLanguage(e.target.value));
   on('#setTheme', 'change', (e) => saveSettings({ theme: e.target.value }));
   on('#setMotion', 'change', (e) => saveSettings({ motion: e.target.checked }));
   on('#setConf', 'input', (e) => { $('#confOut').textContent = Math.round(e.target.value * 100) + '%'; saveSettings({ minConf: +e.target.value }); });

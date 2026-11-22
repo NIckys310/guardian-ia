@@ -9,7 +9,7 @@
    la primera vez; Guardián intenta reconectarse solo después.
    ========================================================= */
 import { bus } from '../core/bus.js';
-import { registrar } from '../core/fallos.js';
+import { logError } from '../core/fallos.js';
 
 const IMMEDIATE_ALERT = 0x1802, ALERT_LEVEL = 0x2a06;
 const UART = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
@@ -66,7 +66,7 @@ export async function reconnectBluetooth() {
   try {
     const dev = (await navigator.bluetooth.getDevices()).find((d) => d.id === saved.id);
     if (dev) await attach(dev);
-  } catch (e) { registrar('Bluetooth', e); setStatus('off'); }
+  } catch (e) { logError('Bluetooth', e); setStatus('off'); }
 }
 
 export function disconnectBluetooth() {
@@ -78,12 +78,12 @@ export function disconnectBluetooth() {
 }
 
 /* Envía un evento: las alertas hacen pitar fuerte; los avistamientos, suave */
-export async function btNotify(evento) {
+export async function btNotify(eventData) {
   if (bt.status !== 'on') return;
   try {
-    if (bt.alertChar) await bt.alertChar.writeValueWithoutResponse(Uint8Array.of(evento.evento === 'alerta' || evento.evento === 'prueba' ? 2 : 1));
+    if (bt.alertChar) await bt.alertChar.writeValueWithoutResponse(Uint8Array.of(eventData.evento === 'alerta' || eventData.evento === 'prueba' ? 2 : 1));
     if (bt.uartChar) {
-      const bytes = new TextEncoder().encode(JSON.stringify(evento) + '\n');
+      const bytes = new TextEncoder().encode(JSON.stringify(eventData) + '\n');
       for (let i = 0; i < bytes.length; i += 20) await bt.uartChar.writeValueWithoutResponse(bytes.slice(i, i + 20));
     }
   } catch (e) { console.warn('Bluetooth: no se pudo enviar', e); }

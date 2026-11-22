@@ -78,12 +78,12 @@ function tick() {
 
 function checkPaired() {
   if (!pairing) return;
-  const nuevo = data.devices.find((d) => !pairing.known.has(d.id));
-  if (!nuevo) return;
+  const newValue = data.devices.find((d) => !pairing.known.has(d.id));
+  if (!newValue) return;
   clearInterval(countdown); pairing = null;
-  $('#pairBox').innerHTML = `<div class="pair-ok"><div class="tick">${icon('check')}</div><h4>¡${esc(nuevo.nombre)} quedó conectado!</h4><p class="muted">Lo que detecte llegará aquí al instante.</p><button class="btn sm" id="pairAgain">${icon('plus')}Conectar otro</button></div>`;
+  $('#pairBox').innerHTML = `<div class="pair-ok"><div class="tick">${icon('check')}</div><h4>¡${esc(newValue.nombre)} quedó conectado!</h4><p class="muted">Lo que detecte llegará aquí al instante.</p><button class="btn sm" id="pairAgain">${icon('plus')}Conectar otro</button></div>`;
   $('#pairAgain').onclick = createCode;
-  toast(`${nuevo.nombre} se vinculó a tu cuenta`, 'ok');
+  toast(`${newValue.nombre} se vinculó a tu cuenta`, 'ok');
 }
 
 function resetPairBox() {
@@ -144,9 +144,9 @@ async function onDevAction(e) {
     openModal({
       title: 'Cambiar nombre', html: `<label class="field">Nombre<input class="input" id="devName" maxlength="60" value="${esc(d.nombre)}" autofocus></label>`,
       actions: [{ label: 'Cancelar', cls: 'ghost' }, { label: 'Guardar', cls: 'primary', fn: async (el) => {
-        const nombre = el.querySelector('#devName').value.trim();
-        if (!nombre) return false;
-        const { error } = await sb().from('devices').update({ nombre }).eq('id', d.id);
+        const nameValue = el.querySelector('#devName').value.trim();
+        if (!nameValue) return false;
+        const { error } = await sb().from('devices').update({ nombre: nameValue }).eq('id', d.id);
         if (error) { toast(friendlyError(error), 'err'); return false; }
         loadDevices();
       } }]

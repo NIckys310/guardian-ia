@@ -4,9 +4,9 @@
    al navegador. Estas funciones llaman a las Netlify Functions.
    ========================================================= */
 import { CONFIG } from '../config.js';
-import { registrar } from '../core/fallos.js';
+import { logError } from '../core/fallos.js';
 import { auth } from './auth.js';
-import { idioma } from '../core/i18n.js';
+import { language } from '../core/i18n.js';
 
 export const claude = { configured: null, model: '' };
 
@@ -24,7 +24,7 @@ export async function checkClaude() {
     const j = await r.json();
     claude.configured = Boolean(j.configured);
     claude.model = j.model || '';
-  } catch (e) { registrar('revisar la IA', e); claude.configured = false; }
+  } catch (e) { logError('revisar la IA', e); claude.configured = false; }
   return claude.configured;
 }
 
@@ -50,7 +50,7 @@ export async function identifyWithClaude(imageDataURL, { kind = 'identify' } = {
   try {
     r = await fetch(`${CONFIG.functionsBase}/identify`, {
       method: 'POST', headers: headers(),
-      body: JSON.stringify({ image: imageDataURL.split(',')[1], kind, idioma })
+      body: JSON.stringify({ image: imageDataURL.split(',')[1], kind, idioma: language })
     });
   } catch { throw new AIError('Sin conexión con el servidor de IA.', 0); }
   if (!r.ok) throw await failure(r);
@@ -63,7 +63,7 @@ export async function chatStream({ messages, context }, onDelta, signal) {
   try {
     r = await fetch(`${CONFIG.functionsBase}/chat`, {
       method: 'POST', headers: headers(), signal,
-      body: JSON.stringify({ messages, context, idioma })
+      body: JSON.stringify({ messages, context, idioma: language })
     });
   } catch (e) {
     if (e.name === 'AbortError') throw e;

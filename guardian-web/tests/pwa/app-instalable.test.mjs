@@ -4,13 +4,13 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const RAIZ = fileURLToPath(new URL('../../', import.meta.url));
-const leer = (p) => readFileSync(join(RAIZ, p), 'utf8');
-const existe = (p) => existsSync(join(RAIZ, p.replace(/^\.\//, '')));
-const sw = leer('sw.js');
+const ROOT = fileURLToPath(new URL('../../', import.meta.url));
+const readRows = (p) => readFileSync(join(ROOT, p), 'utf8');
+const exists = (p) => existsSync(join(ROOT, p.replace(/^\.\//, '')));
+const sw = readRows('sw.js');
 const SHELL = JSON.parse(sw.match(/const SHELL = (\[[^\]]*\])/)[1].replace(/'/g, '"'));
 
-const todos = (dir, ext) => readdirSync(join(RAIZ, dir), { recursive: true })
+const allItems = (dir, ext) => readdirSync(join(ROOT, dir), { recursive: true })
   .filter((f) => f.endsWith(ext)).map((f) => `./${dir}/${f.replace(/\\/g, '/')}`);
 
 test('el service worker tiene número de versión', () => {
@@ -18,12 +18,12 @@ test('el service worker tiene número de versión', () => {
 });
 
 test('todos los archivos que guarda el service worker existen', () => {
-  assert.deepEqual(SHELL.filter((p) => p !== './' && !existe(p)), []);
+  assert.deepEqual(SHELL.filter((p) => p !== './' && !exists(p)), []);
 });
 
 test('ningún archivo JS o CSS de la app se quedó por fuera del modo sin internet', () => {
-  const faltan = [...todos('js', '.js'), ...todos('css', '.css')].filter((p) => !SHELL.includes(p));
-  assert.deepEqual(faltan, []);
+  const missing = [...allItems('js', '.js'), ...allItems('css', '.css')].filter((p) => !SHELL.includes(p));
+  assert.deepEqual(missing, []);
 });
 
 test('el service worker nunca guarda las respuestas de las funciones del servidor', () => {
@@ -31,24 +31,24 @@ test('el service worker nunca guarda las respuestas de las funciones del servido
 });
 
 test('el manifest permite instalar la app (nombre, colores, íconos)', () => {
-  const m = JSON.parse(leer('manifest.json'));
+  const m = JSON.parse(readRows('manifest.json'));
   assert.ok(m.name && m.short_name);
   assert.equal(m.display, 'standalone');
   assert.equal(m.lang, 'es');
-  for (const i of m.icons) assert.ok(existe(i.src), `falta el ícono ${i.src}`);
+  for (const i of m.icons) assert.ok(exists(i.src), `falta el ícono ${i.src}`);
   assert.ok(m.icons.some((i) => i.purpose === 'maskable'), 'falta ícono maskable para Android');
   assert.ok(m.icons.some((i) => i.sizes === '512x512'), 'falta ícono de 512 px');
 });
 
 test('todo lo que carga index.html existe', () => {
-  const html = leer('index.html');
+  const html = readRows('index.html');
   const locales = [...html.matchAll(/(?:src|href)="(?!https?:|data:|#|mailto:)([^"]+)"/g)].map((m) => m[1].split('?')[0]);
   assert.ok(locales.length > 0);
-  assert.deepEqual(locales.filter((p) => !existe(p)), []);
+  assert.deepEqual(locales.filter((p) => !exists(p)), []);
 });
 
 test('index.html está en español y se adapta al celular', () => {
-  const html = leer('index.html');
+  const html = readRows('index.html');
   assert.match(html, /<html lang="es"/);
   assert.match(html, /name="viewport"[^>]*width=device-width/);
 });

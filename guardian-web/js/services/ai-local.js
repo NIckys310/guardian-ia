@@ -8,7 +8,7 @@ import { loadScript } from './cloud.js';
 import { bus } from '../core/bus.js';
 import { SPECIES, COCO_ES } from '../data/species.js';
 import { COLOMBIA } from '../data/species-colombia.js';
-import { registrar } from '../core/fallos.js';
+import { logError } from '../core/fallos.js';
 
 export const ALL_SPECIES = [...COLOMBIA, ...SPECIES];
 export { COCO_ES };
@@ -49,7 +49,7 @@ export function loadModels() {
       await Promise.all([mn.classify(warm, 1), coco.detect(warm, 1)]);
       setStatus('ok', `IA lista · ${ai.backend.toUpperCase()}`);
     } catch (e) {
-      registrar('cargar la IA local', e);
+      logError('cargar la IA local', e);
       loading = null;
       setStatus('err', navigator.onLine ? 'No se pudo cargar la IA' : 'Sin internet: la IA se descargará al conectarte');
     }

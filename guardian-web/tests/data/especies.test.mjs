@@ -5,38 +5,38 @@ import { COLOMBIA } from '../../js/data/species-colombia.js';
 import { GROUPS } from '../../js/data/groups.js';
 import { conservClass } from '../../js/core/dom.js';
 
-const TODAS = [...COLOMBIA, ...SPECIES];
-const CAMPOS = ['id', 'grupo', 'nombre', 'cientifico', 'estado', 'habitat', 'reproduccion', 'dieta', 'distribucion'];
+const ALL_TABLES = [...COLOMBIA, ...SPECIES];
+const FIELDS = ['id', 'grupo', 'nombre', 'cientifico', 'estado', 'habitat', 'reproduccion', 'dieta', 'distribucion'];
 
 test('el catálogo tiene suficientes especies', () => {
-  assert.ok(TODAS.length >= 50, `solo hay ${TODAS.length}`);
+  assert.ok(ALL_TABLES.length >= 50, `solo hay ${ALL_TABLES.length}`);
 });
 
 test('cada especie tiene todos los datos de su ficha', () => {
-  for (const s of TODAS) {
-    for (const c of CAMPOS) assert.ok(typeof s[c] === 'string' && s[c].trim(), `${s.id || s.nombre} sin ${c}`);
+  for (const s of ALL_TABLES) {
+    for (const c of FIELDS) assert.ok(typeof s[c] === 'string' && s[c].trim(), `${s.id || s.nombre} sin ${c}`);
   }
 });
 
 test('los identificadores de especie no se repiten', () => {
-  const ids = TODAS.map((s) => s.id);
-  const repetidos = ids.filter((id, i) => ids.indexOf(id) !== i);
-  assert.deepEqual(repetidos, []);
+  const ids = ALL_TABLES.map((s) => s.id);
+  const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
+  assert.deepEqual(duplicates, []);
 });
 
 test('los identificadores son aptos para la base de datos (minúsculas, sin espacios)', () => {
-  for (const s of TODAS) assert.match(s.id, /^[a-z0-9_-]+$/, s.id);
+  for (const s of ALL_TABLES) assert.match(s.id, /^[a-z0-9_-]+$/, s.id);
 });
 
 test('cada especie pertenece a un grupo con ícono en el mapa', () => {
-  for (const s of TODAS) assert.ok(GROUPS[s.grupo], `${s.id}: grupo "${s.grupo}" no existe`);
+  for (const s of ALL_TABLES) assert.ok(GROUPS[s.grupo], `${s.id}: grupo "${s.grupo}" no existe`);
 });
 
 test('el nombre científico es "Género especie", "Género sp."/"spp." o un grupo (familia, orden)', () => {
   // Varias opciones se separan con " / " (por ejemplo, elefante africano / asiático)
-  const valido = /^([A-Z][a-z]+ [a-z]+( [a-z]+)?|[A-Z][a-z]+ spp?\.|[A-Z][a-z]+)$/;   // también subespecie: Canis lupus familiaris
-  for (const s of TODAS) {
-    for (const parte of s.cientifico.split(' / ')) assert.match(parte, valido, `${s.id}: ${s.cientifico}`);
+  const isValid = /^([A-Z][a-z]+ [a-z]+( [a-z]+)?|[A-Z][a-z]+ spp?\.|[A-Z][a-z]+)$/;   // también subespecie: Canis lupus familiaris
+  for (const s of ALL_TABLES) {
+    for (const part of s.cientifico.split(' / ')) assert.match(part, isValid, `${s.id}: ${s.cientifico}`);
   }
 });
 
@@ -44,18 +44,18 @@ test('el nombre científico es "Género especie", "Género sp."/"spp." o un grup
 const GENERAL = /Varía|No evaluado \(NE\)|Por determinar/;
 
 test('el estado de conservación de cada especie silvestre se reconoce', () => {
-  for (const s of TODAS.filter((x) => x.grupo !== 'domestico')) {
+  for (const s of ALL_TABLES.filter((x) => x.grupo !== 'domestico')) {
     assert.ok(conservClass(s.estado) !== 'na' || GENERAL.test(s.estado), `${s.id}: "${s.estado}"`);
   }
 });
 
 test('las especies con nombre científico completo tienen categoría UICN exacta', () => {
-  const exactas = TODAS.filter((s) => /^[A-Z][a-z]+ [a-z]+$/.test(s.cientifico) && s.grupo !== 'domestico' && !GENERAL.test(s.estado));
-  for (const s of exactas) assert.match(s.estado, /\((LC|NT|VU|EN|CR|EW|EX|DD)[,)]/, `${s.id}: "${s.estado}"`);
+  const exact = ALL_TABLES.filter((s) => /^[A-Z][a-z]+ [a-z]+$/.test(s.cientifico) && s.grupo !== 'domestico' && !GENERAL.test(s.estado));
+  for (const s of exact) assert.match(s.estado, /\((LC|NT|VU|EN|CR|EW|EX|DD)[,)]/, `${s.id}: "${s.estado}"`);
 });
 
 test('cada especie tiene palabras para reconocerla con la IA local', () => {
-  for (const s of TODAS) {
+  for (const s of ALL_TABLES) {
     assert.ok(Array.isArray(s.match), `${s.id} sin lista de palabras`);
     // "ave" es la ficha de respaldo para aves que la IA no reconoce: no necesita palabras
     if (s.id !== 'ave') assert.ok(s.match.length, `${s.id} sin palabras de reconocimiento`);

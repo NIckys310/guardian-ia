@@ -29,14 +29,14 @@ test('fmtDate() y fmtDay() escriben el año de la fecha', () => {
 });
 
 test('fmtRel() describe hace cuánto pasó algo', () => {
-  const ahora = Date.now();
-  assert.equal(fmtRel(ahora - 10_000), 'hace un momento');
-  assert.equal(fmtRel(ahora - 5 * 60_000), 'hace 5 min');
-  assert.equal(fmtRel(ahora - 3 * 3600_000), 'hace 3 h');
-  assert.equal(fmtRel(ahora - 2 * 86400_000), 'hace 2 d');
+  const now = Date.now();
+  assert.equal(fmtRel(now - 10_000), 'hace un momento');
+  assert.equal(fmtRel(now - 5 * 60_000), 'hace 5 min');
+  assert.equal(fmtRel(now - 3 * 3600_000), 'hace 3 h');
+  assert.equal(fmtRel(now - 2 * 86400_000), 'hace 2 d');
 });
 
 test('fmtRel() usa la fecha completa después de una semana', () => {
-  const viejo = Date.now() - 30 * 86400_000;
-  assert.equal(fmtRel(viejo), fmtDay(viejo));
+  const oldValue = Date.now() - 30 * 86400_000;
+  assert.equal(fmtRel(oldValue), fmtDay(oldValue));
 });

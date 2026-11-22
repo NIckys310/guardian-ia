@@ -7,98 +7,98 @@
    - {} es un dato cualquiera; {#} solo un número ("5", "1,2 MB").
    - El idioma se guarda en este equipo. Por defecto: español.
    ========================================================= */
-const CLAVE = 'guardian.idioma';
+const STORAGE_KEY = 'guardian.idioma';
 
-function guardado() {
-  try { return localStorage.getItem(CLAVE) === 'en' ? 'en' : 'es'; } catch { return 'es'; }
+function storedLanguage() {
+  try { return localStorage.getItem(STORAGE_KEY) === 'en' ? 'en' : 'es'; } catch { return 'es'; }
 }
 
-export const idioma = guardado();
-export const LOCALE = idioma === 'en' ? 'en-US' : 'es-CO';
+export const language = storedLanguage();
+export const LOCALE = language === 'en' ? 'en-US' : 'es-CO';
 
-export function cambiarIdioma(nuevo) {
-  try { localStorage.setItem(CLAVE, nuevo === 'en' ? 'en' : 'es'); } catch { /* sin almacenamiento */ }
+export function changeLanguage(newValue) {
+  try { localStorage.setItem(STORAGE_KEY, newValue === 'en' ? 'en' : 'es'); } catch { /* sin almacenamiento */ }
   location.reload();     // fechas, gráficas y textos quedan parejos
 }
 
 /* ---------- Traductor (sin DOM: se puede probar) ---------- */
-const NUMERO = '[\\d.,:]+(?:\\s?[a-zA-Z%]{1,3})?';
-const HUECO = /\{#?\}/;
-const LARGO_MAXIMO = 260;   // un texto más largo es contenido de la persona, no de la app
+const NUMBER_PATTERN = '[\\d.,:]+(?:\\s?[a-zA-Z%]{1,3})?';
+const PLACEHOLDER = /\{#?\}/;
+const MAX_LENGTH = 260;   // un texto más largo es contenido de la persona, no de la app
 
-function compilar(es, en) {
-  const partes = es.split(/(\{#?\})/);
-  const fuente = partes.map((p) => (p === '{}' ? '(.+?)' : p === '{#}' ? `(${NUMERO})` : p.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&'))).join('');
-  return { re: new RegExp(`^${fuente}$`, 's'), en, peso: partes.filter((p) => !HUECO.test(p)).join('').length };
+function compile(es, en) {
+  const parts = es.split(/(\{#?\})/);
+  const source = parts.map((p) => (p === '{}' ? '(.+?)' : p === '{#}' ? `(${NUMBER_PATTERN})` : p.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&'))).join('');
+  return { re: new RegExp(`^${source}$`, 's'), en, peso: parts.filter((p) => !PLACEHOLDER.test(p)).join('').length };
 }
 
-export function crearTraductor(dic) {
-  const exactas = new Map(), patrones = [];
-  for (const [es, en] of Object.entries(dic)) {
-    if (HUECO.test(es)) patrones.push(compilar(es, en)); else exactas.set(es, en);
+export function createTranslator(dictionary) {
+  const exact = new Map(), patterns = [];
+  for (const [es, en] of Object.entries(dictionary)) {
+    if (PLACEHOLDER.test(es)) patterns.push(compile(es, en)); else exact.set(es, en);
   }
-  patrones.sort((a, b) => b.peso - a.peso);
-  const memoria = new Map();
+  patterns.sort((a, b) => b.peso - a.peso);
+  const memo = new Map();
 
-  const traducir = (limpio, nivel) => {
-    if (exactas.has(limpio)) return exactas.get(limpio);
-    if (nivel > 3 || limpio.length > LARGO_MAXIMO) return limpio;
-    for (const p of patrones) {
-      const m = limpio.match(p.re);
+  const translate = (clean, level) => {
+    if (exact.has(clean)) return exact.get(clean);
+    if (level > 3 || clean.length > MAX_LENGTH) return clean;
+    for (const p of patterns) {
+      const m = clean.match(p.re);
       if (!m) continue;
       let i = 1;
-      return p.en.replace(/\{#?\}/g, () => traducir(m[i++].trim(), nivel + 1));
+      return p.en.replace(/\{#?\}/g, () => translate(m[i++].trim(), level + 1));
     }
     // "9:56 AM · hace un momento": se traduce cada parte
-    if (limpio.includes(' · ')) return limpio.split(' · ').map((p) => traducir(p, nivel + 1)).join(' · ');
-    return limpio;
+    if (clean.includes(' · ')) return clean.split(' · ').map((p) => translate(p, level + 1)).join(' · ');
+    return clean;
   };
 
-  return (texto) => {
-    if (typeof texto !== 'string' || !/\p{L}{2}/u.test(texto)) return texto;
-    if (memoria.has(texto)) return memoria.get(texto);
-    const inicio = texto.match(/^\s*/)[0], fin = texto.match(/\s*$/)[0];
-    const limpio = texto.trim().replace(/\s+/g, ' ');
-    const hecho = traducir(limpio, 0);
-    const salida = hecho === limpio ? texto : inicio + hecho + fin;
-    if (memoria.size > 4000) memoria.clear();
-    memoria.set(texto, salida);
-    return salida;
+  return (textValue) => {
+    if (typeof textValue !== 'string' || !/\p{L}{2}/u.test(textValue)) return textValue;
+    if (memo.has(textValue)) return memo.get(textValue);
+    const startedAt = textValue.match(/^\s*/)[0], endIndex = textValue.match(/\s*$/)[0];
+    const clean = textValue.trim().replace(/\s+/g, ' ');
+    const result = translate(clean, 0);
+    const output = result === clean ? textValue : startedAt + result + endIndex;
+    if (memo.size > 4000) memo.clear();
+    memo.set(textValue, output);
+    return output;
   };
 }
 
-let traductor = (s) => s;
+let translator = (s) => s;
 /** Para lo que no es DOM: dibujos en canvas, gráficas y notificaciones. */
-export const t = (texto) => traductor(texto);
+export const t = (textValue) => translator(textValue);
 
 /* ---------- Traducir la pantalla ---------- */
-const ATRIBUTOS = ['placeholder', 'title', 'aria-label', 'alt'];
-const NO_TOCAR = 'script,style,textarea,code,pre,[data-no-i18n],.msg .bubble:not(.error)';
+const ATTRIBUTES = ['placeholder', 'title', 'aria-label', 'alt'];
+const SKIP_SELECTOR = 'script,style,textarea,code,pre,[data-no-i18n],.msg .bubble:not(.error)';
 
-function traducirTexto(n) {
-  if (!n.nodeValue?.trim() || n.parentElement?.closest(NO_TOCAR)) return;
-  const nuevo = t(n.nodeValue);
-  if (nuevo !== n.nodeValue) n.nodeValue = nuevo;
+function translateText(n) {
+  if (!n.nodeValue?.trim() || n.parentElement?.closest(SKIP_SELECTOR)) return;
+  const newValue = t(n.nodeValue);
+  if (newValue !== n.nodeValue) n.nodeValue = newValue;
 }
 
-function traducirElemento(el) {
-  for (const a of ATRIBUTOS) {
+function translateElement(el) {
+  for (const a of ATTRIBUTES) {
     const v = el.getAttribute(a);
-    if (v) { const nuevo = t(v); if (nuevo !== v) el.setAttribute(a, nuevo); }
+    if (v) { const newValue = t(v); if (newValue !== v) el.setAttribute(a, newValue); }
   }
 }
 
-function traducirArbol(raiz) {
-  if (raiz.nodeType === Node.TEXT_NODE) return traducirTexto(raiz);
-  if (raiz.nodeType !== Node.ELEMENT_NODE && raiz.nodeType !== Node.DOCUMENT_NODE) return;
-  if (raiz.nodeType === Node.ELEMENT_NODE) traducirElemento(raiz);
-  const w = document.createTreeWalker(raiz, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
-  while (w.nextNode()) w.currentNode.nodeType === Node.TEXT_NODE ? traducirTexto(w.currentNode) : traducirElemento(w.currentNode);
+function translateTree(root) {
+  if (root.nodeType === Node.TEXT_NODE) return translateText(root);
+  if (root.nodeType !== Node.ELEMENT_NODE && root.nodeType !== Node.DOCUMENT_NODE) return;
+  if (root.nodeType === Node.ELEMENT_NODE) translateElement(root);
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+  while (w.nextNode()) w.currentNode.nodeType === Node.TEXT_NODE ? translateText(w.currentNode) : translateElement(w.currentNode);
 }
 
 /** Los reportes guardados son una página aparte (HTML dentro de un iframe). */
-export function traducirHtml(html) {
-  if (idioma !== 'en') return html;
+export function translateHtml(html) {
+  if (language !== 'en') return html;
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const w = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
   while (w.nextNode()) w.currentNode.nodeValue = t(w.currentNode.nodeValue);
@@ -107,19 +107,19 @@ export function traducirHtml(html) {
 }
 
 /** Se llama una vez al arrancar. En español no hace nada ni descarga nada. */
-export async function prepararIdioma() {
-  if (idioma !== 'en') return;
-  const [{ EN }, { fichasEnIngles }, { SPECIES }, { COLOMBIA }] = await Promise.all([
+export async function prepareLanguage() {
+  if (language !== 'en') return;
+  const [{ EN }, { englishSpeciesRecords }, { SPECIES }, { COLOMBIA }] = await Promise.all([
     import('../data/i18n-en.js'), import('../data/species-en.js'), import('../data/species.js'), import('../data/species-colombia.js')
   ]);
-  traductor = crearTraductor({ ...fichasEnIngles([...COLOMBIA, ...SPECIES]), ...EN });
+  translator = createTranslator({ ...englishSpeciesRecords([...COLOMBIA, ...SPECIES]), ...EN });
   document.documentElement.lang = 'en';
-  traducirArbol(document.documentElement);
-  new MutationObserver((cambios) => {
-    for (const c of cambios) {
-      if (c.type === 'characterData') traducirTexto(c.target);
-      else if (c.type === 'attributes') traducirElemento(c.target);
-      else c.addedNodes.forEach(traducirArbol);
+  translateTree(document.documentElement);
+  new MutationObserver((changes) => {
+    for (const c of changes) {
+      if (c.type === 'characterData') translateText(c.target);
+      else if (c.type === 'attributes') translateElement(c.target);
+      else c.addedNodes.forEach(translateTree);
     }
-  }).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATRIBUTOS });
+  }).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRIBUTES });
 }

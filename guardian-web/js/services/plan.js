@@ -14,15 +14,15 @@ export const plan = { ...FREE_DEFAULT, loaded: false };
 export const isPro = () => plan.plan === 'pro';
 
 /** Ninguna consulta puede dejar la pantalla cargando para siempre: a los 12 s se rinde. */
-export function conLimite(promesa, ms = 12_000) {
+export function withTimeout(promise, ms = 12_000) {
   let t;
-  const tiempo = new Promise((_, rej) => { t = setTimeout(() => rej(new Error('La nube tardó demasiado en responder. Revisa tu internet y vuelve a intentar.')), ms); });
-  return Promise.race([promesa, tiempo]).finally(() => clearTimeout(t));
+  const time = new Promise((_, rej) => { t = setTimeout(() => rej(new Error('La nube tardó demasiado en responder. Revisa tu internet y vuelve a intentar.')), ms); });
+  return Promise.race([promise, time]).finally(() => clearTimeout(t));
 }
 
 export async function loadPlan() {
   if (!sb() || !auth.user) { Object.assign(plan, FREE_DEFAULT, { loaded: true }); bus.emit('plan:change', plan); return plan; }
-  const { data, error } = await conLimite(sb().rpc('mi_plan'));
+  const { data, error } = await withTimeout(sb().rpc('mi_plan'));
   if (error) throw new Error(friendlyError(error));
   if (data) Object.assign(plan, FREE_DEFAULT, data, { loaded: true });
   bus.emit('plan:change', plan);
@@ -31,13 +31,13 @@ export async function loadPlan() {
 
 export async function loadPlans() {
   if (!sb() || !auth.user) return [];
-  const { data } = await conLimite(sb().from('plans').select('*').eq('activo', true).order('precio_cop'));
+  const { data } = await withTimeout(sb().from('plans').select('*').eq('activo', true).order('precio_cop'));
   return data || [];
 }
 
 export async function paymentHistory() {
   if (!sb() || !auth.user || auth.isDevice) return [];
-  const { data } = await conLimite(sb().from('payments').select('reference, amount_cents, status, metodo, provider, created_at').order('created_at', { ascending: false }).limit(12));
+  const { data } = await withTimeout(sb().from('payments').select('reference, amount_cents, status, metodo, provider, created_at').order('created_at', { ascending: false }).limit(12));
   return data || [];
 }
 
@@ -58,16 +58,16 @@ export async function startCheckout(planId = 'pro') {
 }
 
 /* MODO PRUEBA: pago simulado (no mueve dinero). Activa Pro por 30 días. */
-export async function simularPago(metodo) {
-  const { data, error } = await conLimite(sb().rpc('simular_pago', { p_metodo: metodo }));
+export async function simulatePayment(method) {
+  const { data, error } = await withTimeout(sb().rpc('simular_pago', { p_metodo: method }));
   if (error) throw new Error(friendlyError(error));
   await loadPlan();
   return data;
 }
 
 /* MODO PRUEBA: volver al plan gratis para repetir la demostración */
-export async function cancelarPrueba() {
-  const { error } = await conLimite(sb().rpc('cancelar_prueba'));
+export async function cancelTrial() {
+  const { error } = await withTimeout(sb().rpc('cancelar_prueba'));
   if (error) throw new Error(friendlyError(error));
   await loadPlan();
 }

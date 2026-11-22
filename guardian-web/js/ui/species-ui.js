@@ -8,22 +8,22 @@ import { icon } from './icons.js';
 
 export const findSpecies = (id) => ALL_SPECIES.find((s) => s.id === id) || null;
 
-export function groupBadge(grupo, size = 26) {
-  const g = groupOf(grupo);
+export function groupBadge(groupKey, size = 26) {
+  const g = groupOf(groupKey);
   return `<span title="${esc(g.nombre)}" style="display:inline-flex">${badgeSVG(g.color, g.svg, size)}</span>`;
 }
 
-export const conservChip = (estado) => `<span class="conserv ${conservClass(estado)}">${esc(estado || 'Sin evaluar')}</span>`;
+export const conservChip = (statusValue) => `<span class="conserv ${conservClass(statusValue)}">${esc(statusValue || 'Sin evaluar')}</span>`;
 
 export function groupOptions(selected = '') {
   return Object.entries(GROUPS).map(([id, g]) => `<option value="${id}" ${id === selected ? 'selected' : ''}>${esc(g.nombre)}</option>`).join('');
 }
 
 /* Ficha de especie con estilo de lámina de guía de campo */
-export function plateHTML(sp, conf, fuente, count) {
+export function plateHTML(sp, conf, source, count) {
   return `
     <article class="plate">
-      <div class="src"><span>${icon(fuente === 'IA avanzada' ? 'spark' : 'ai')} ${esc(fuente)}</span><span>Confianza ${pct(conf)}</span></div>
+      <div class="src"><span>${icon(source === 'IA avanzada' ? 'spark' : 'ai')} ${esc(source)}</span><span>Confianza ${pct(conf)}</span></div>
       <div class="head">${groupBadge(sp.grupo, 34)}<div><h2>${esc(sp.nombre)}</h2><div class="sci">${esc(sp.cientifico)}</div></div></div>
       <div class="meter"><div class="progress"><i style="--p:${Math.round(conf * 100)}%"></i></div></div>
       <div style="margin-top:12px">${conservChip(sp.estado)}</div>

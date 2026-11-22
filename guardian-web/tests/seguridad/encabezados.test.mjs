@@ -13,8 +13,8 @@ test('el navegador no adivina tipos de archivo (nosniff)', () => {
 });
 
 test('siempre se usa HTTPS (HSTS de al menos un año)', () => {
-  const edad = Number(toml.match(/Strict-Transport-Security = "max-age=(\d+)/)?.[1]);
-  assert.ok(edad >= 31536000);
+  const ageValue = Number(toml.match(/Strict-Transport-Security = "max-age=(\d+)/)?.[1]);
+  assert.ok(ageValue >= 31536000);
 });
 
 test('solo se permite cámara, ubicación y Bluetooth (no micrófono ni pagos dentro de la app)', () => {

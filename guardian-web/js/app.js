@@ -7,8 +7,8 @@
    ========================================================= */
 import { $, $$, enableRipples, stagger } from './core/dom.js';
 import { bus } from './core/bus.js';
-import { prepararIdioma } from './core/i18n.js';
-import { vigilar, registrar } from './core/fallos.js';
+import { prepareLanguage } from './core/i18n.js';
+import { watchErrors, logError } from './core/fallos.js';
 import { hydrateIcons, icon } from './ui/icons.js';
 import { toast } from './ui/toast.js';
 import { openModal } from './ui/modal.js';
@@ -24,34 +24,34 @@ import { showAuth, hideAuth } from './views/auth.js';
 import { showPairing } from './views/pair.js';
 
 import * as panel from './views/panel.js';
-import * as escaner from './views/scanner.js';
-import * as mapa from './views/map.js';
-import * as estadisticas from './views/stats.js';
-import * as registros from './views/records.js';
-import * as alertas from './views/alerts.js';
-import * as reportes from './views/reports.js';
-import * as asistente from './views/chat.js';
-import * as dispositivos from './views/devices.js';
-import * as papelera from './views/trash.js';
-import * as ajustes from './views/settings.js';
+import * as scannerView from './views/scanner.js';
+import * as mapView from './views/map.js';
+import * as statsView from './views/stats.js';
+import * as recordsView from './views/records.js';
+import * as alertsView from './views/alerts.js';
+import * as reportsView from './views/reports.js';
+import * as assistantView from './views/chat.js';
+import * as devicesView from './views/devices.js';
+import * as trashView from './views/trash.js';
+import * as settingsView from './views/settings.js';
 import * as pro from './views/pro.js';
 import { loadPlan } from './services/plan.js';
 
-const VIEWS = { panel, escaner, mapa, estadisticas, registros, alertas, reportes, asistente, dispositivos, papelera, pro, ajustes };
+const VIEWS = { panel, escaner: scannerView, mapa: mapView, estadisticas: statsView, registros: recordsView, alertas: alertsView, reportes: reportsView, asistente: assistantView, dispositivos: devicesView, papelera: trashView, pro, ajustes: settingsView };
 const DEVICE_VIEWS = ['panel', 'escaner', 'mapa', 'registros', 'alertas', 'ajustes'];
 const inited = new Set();
-let current = null, started = false, transicion = null;
+let current = null, started = false, transition = null;
 
 /* ---------- Arranque ---------- */
-vigilar();
+watchErrors();
 
 async function boot() {
-  await prepararIdioma();
+  await prepareLanguage();
   hydrateIcons();
   enableRipples();
   registerSW();
   await loadSettings();
-  try { await initAuth(); } catch (e) { registrar('conectar con la nube', e); toast('No se pudo conectar con la nube. Revisa tu internet.', 'err'); }
+  try { await initAuth(); } catch (e) { logError('conectar con la nube', e); toast('No se pudo conectar con la nube. Revisa tu internet.', 'err'); }
   if (auth.user) await loadSettings();   // ahora con los ajustes de la cuenta
 
   const pairCode = location.hash.match(/^#\/vincular\/([A-Za-z0-9]{6})/)?.[1];
@@ -107,10 +107,10 @@ export function go(name, first = false) {
   if (name === current && !first) return;
   // La sección actual cambia YA (no al terminar la animación): así una navegación
   // rápida nunca se ignora ni regresa a la pantalla anterior.
-  const previo = current;
+  const previousView = current;
   current = name;
   const swap = () => {
-    if (previo && previo !== name) VIEWS[previo].hide?.();
+    if (previousView && previousView !== name) VIEWS[previousView].hide?.();
     $$('.view').forEach((v) => v.classList.toggle('active', v.id === 'view-' + name));
     $$('[data-view]').forEach((b) => b.classList.toggle('active', b.dataset.view === name));
     const sec = $('#view-' + name);
@@ -122,13 +122,13 @@ export function go(name, first = false) {
     VIEWS[name].show?.();
     $('#main').scrollTop = 0;
   };
-  transicion?.skipTransition?.();     // si había una animación a medias, termina ya y en orden
-  transicion = null;
+  transition?.skipTransition?.();     // si había una animación a medias, termina ya y en orden
+  transition = null;
   if (document.startViewTransition && !first && settings.motion && !document.hidden) {
     const t = document.startViewTransition(swap);
-    transicion = t;
-    const limpiar = () => { if (transicion === t) transicion = null; };
-    t.finished.then(limpiar, limpiar);
+    transition = t;
+    const cleanup = () => { if (transition === t) transition = null; };
+    t.finished.then(cleanup, cleanup);
     t.ready.catch(() => {});        // si el navegador cancela la animación, no es un error
     t.finished.catch(() => {});
     t.updateCallbackDone.catch(() => swap());

@@ -8,11 +8,11 @@ import { SPECIES } from '../js/data/species.js';
 import { COLOMBIA } from '../js/data/species-colombia.js';
 
 const q = (s) => `'${String(s ?? '').replace(/'/g, "''")}'`;
-const code = (estado = '') => {
-  const m = estado.match(/\((EX|EW|CR|EN|VU|NT|LC|DD|NE)\)/);
+const code = (statusValue = '') => {
+  const m = statusValue.match(/\((EX|EW|CR|EN|VU|NT|LC|DD|NE)\)/);
   if (m) return q(m[1]);
-  if (/doméstico/i.test(estado)) return q('DOM');
-  if (/crítico/i.test(estado)) return q('CR');
+  if (/doméstico/i.test(statusValue)) return q('DOM');
+  if (/crítico/i.test(statusValue)) return q('CR');
   return 'null';
 };
 

@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { dataURLtoBlob } from '../../js/core/dom.js';
 
 test('dataURLtoBlob() convierte la foto en un archivo con su tipo', async () => {
-  const texto = 'hola guardián';
-  const url = 'data:text/plain;base64,' + Buffer.from(texto).toString('base64');
+  const textValue = 'hola guardián';
+  const url = 'data:text/plain;base64,' + Buffer.from(textValue).toString('base64');
   const blob = dataURLtoBlob(url);
   assert.equal(blob.type, 'text/plain');
-  assert.equal(await blob.text(), texto);
+  assert.equal(await blob.text(), textValue);
 });
 
 test('dataURLtoBlob() respeta el tamaño de una imagen JPEG', () => {

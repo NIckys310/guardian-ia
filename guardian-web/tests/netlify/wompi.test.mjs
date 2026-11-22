@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import wompi from '../../netlify/functions/wompi.mjs';
-import { conEntorno, fetchFalso, respuesta } from '../helpers/navegador.mjs';
+import { withEnv, fakeFetch, reply } from '../helpers/navegador.mjs';
 
 const URL_F = 'https://guardian.test/.netlify/functions/';
 
@@ -20,24 +20,24 @@ test('wompi ignora eventos que no son de pago o vienen sin firma', async () => {
 });
 
 test('wompi: si la base rechaza la firma, responde 200 con ok:false (para que Wompi no reintente)', () =>
-  conEntorno({ SUPABASE_URL: 'https://prueba.supabase.co', SUPABASE_ANON_KEY: 'anon' }, async (t) => {
-    const f = fetchFalso(() => respuesta(200, { ok: false, error: 'firma inválida' }));
-    const aviso = console.warn; console.warn = () => {};
+  withEnv({ SUPABASE_URL: 'https://prueba.supabase.co', SUPABASE_ANON_KEY: 'anon' }, async (t) => {
+    const f = fakeFetch(() => reply(200, { ok: false, error: 'firma inválida' }));
+    const notice = console.warn; console.warn = () => {};
     try {
-      const evento = { event: 'transaction.updated', signature: { checksum: 'abc' }, data: {} };
-      const r = await wompi(new Request(URL_F + 'wompi', { method: 'POST', body: JSON.stringify(evento) }));
+      const eventData = { event: 'transaction.updated', signature: { checksum: 'abc' }, data: {} };
+      const r = await wompi(new Request(URL_F + 'wompi', { method: 'POST', body: JSON.stringify(eventData) }));
       assert.equal(r.status, 200);
       assert.deepEqual(await r.json(), { ok: false });
       assert.match(f.llamadas[0].url, /rpc\/wompi_evento$/);
-    } finally { f.restaurar(); console.warn = aviso; }
+    } finally { f.restaurar(); console.warn = notice; }
   }));
 
 test('wompi: un pago con firma válida responde ok:true', () =>
-  conEntorno({ SUPABASE_URL: 'https://prueba.supabase.co', SUPABASE_ANON_KEY: 'anon' }, async () => {
-    const f = fetchFalso(() => respuesta(200, { ok: true }));
+  withEnv({ SUPABASE_URL: 'https://prueba.supabase.co', SUPABASE_ANON_KEY: 'anon' }, async () => {
+    const f = fakeFetch(() => reply(200, { ok: true }));
     try {
-      const evento = { event: 'transaction.updated', signature: { checksum: 'abc' }, data: {} };
-      const r = await wompi(new Request(URL_F + 'wompi', { method: 'POST', body: JSON.stringify(evento) }));
+      const eventData = { event: 'transaction.updated', signature: { checksum: 'abc' }, data: {} };
+      const r = await wompi(new Request(URL_F + 'wompi', { method: 'POST', body: JSON.stringify(eventData) }));
       assert.deepEqual(await r.json(), { ok: true });
     } finally { f.restaurar(); }
   }));

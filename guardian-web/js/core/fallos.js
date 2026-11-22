@@ -4,33 +4,33 @@
    inesperados (errores y promesas sin catch) quedan en la consola y
    en este navegador (los últimos 50). Nada se envía a terceros.
    ========================================================= */
-const CLAVE = 'guardian.fallos';
+const STORAGE_KEY = 'guardian.fallos';
 const MAX = 50;
 
-function almacen() {
+function storage() {
   try { return globalThis.localStorage ?? null; } catch { return null; }
 }
 
 /** Anota un error con dónde pasó. Nunca lanza excepciones. */
-export function registrar(donde, error) {
-  const texto = error instanceof Error ? `${error.name}: ${error.message}` : String(error ?? 'desconocido');
-  try { console.warn(`[Guardián] ${donde}:`, error); } catch { /* sin consola */ }
-  const ls = almacen();
+export function logError(where, error) {
+  const textValue = error instanceof Error ? `${error.name}: ${error.message}` : String(error ?? 'desconocido');
+  try { console.warn(`[Guardián] ${where}:`, error); } catch { /* sin consola */ }
+  const ls = storage();
   if (!ls) return;
   try {
-    const lista = JSON.parse(ls.getItem(CLAVE) || '[]');
-    lista.push({ en: new Date().toISOString(), donde, error: texto.slice(0, 300) });
-    ls.setItem(CLAVE, JSON.stringify(lista.slice(-MAX)));
+    const entries = JSON.parse(ls.getItem(STORAGE_KEY) || '[]');
+    entries.push({ en: new Date().toISOString(), donde: where, error: textValue.slice(0, 300) });
+    ls.setItem(STORAGE_KEY, JSON.stringify(entries.slice(-MAX)));
   } catch { /* almacenamiento lleno o bloqueado: queda solo en la consola */ }
 }
 
 /** Los fallos guardados, del más reciente al más antiguo. */
-export function recientes() {
-  try { return JSON.parse(almacen()?.getItem(CLAVE) || '[]').reverse(); } catch { return []; }
+export function recent() {
+  try { return JSON.parse(storage()?.getItem(STORAGE_KEY) || '[]').reverse(); } catch { return []; }
 }
 
 /** Escucha los errores que nadie atrapó. Se llama una vez al arrancar. */
-export function vigilar(ventana = globalThis) {
-  ventana.addEventListener?.('error', (e) => registrar('error sin atrapar', e.error || e.message));
-  ventana.addEventListener?.('unhandledrejection', (e) => registrar('promesa sin atrapar', e.reason));
+export function watchErrors(dialog = globalThis) {
+  dialog.addEventListener?.('error', (e) => logError('error sin atrapar', e.error || e.message));
+  dialog.addEventListener?.('unhandledrejection', (e) => logError('promesa sin atrapar', e.reason));
 }

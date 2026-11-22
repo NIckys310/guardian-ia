@@ -42,13 +42,13 @@ export function debounce(fn, wait = 250) {
 }
 
 /* Clase de color según la categoría UICN */
-export function conservClass(estado = '') {
-  if (/\((CR|EN|EW|EX)\)|crítico|peligro/i.test(estado)) return 'cr';
-  if (/\((VU|NT)\)|amenazad|vulnerable/i.test(estado)) return 'vu';
-  if (/\(LC\)|menor/i.test(estado)) return 'lc';
+export function conservClass(statusValue = '') {
+  if (/\((CR|EN|EW|EX)\)|crítico|peligro/i.test(statusValue)) return 'cr';
+  if (/\((VU|NT)\)|amenazad|vulnerable/i.test(statusValue)) return 'vu';
+  if (/\(LC\)|menor/i.test(statusValue)) return 'lc';
   return 'na';
 }
-export const isThreatened = (estado) => ['cr', 'vu'].includes(conservClass(estado));
+export const isThreatened = (statusValue) => ['cr', 'vu'].includes(conservClass(statusValue));
 
 /* Contador que sube animado hasta el valor */
 export function animateCount(el, to, dur = 700) {

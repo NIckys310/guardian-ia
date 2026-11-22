@@ -6,7 +6,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { MODEL, hasKey, json, requireUser, overLimit, logUsage } from '../lib/guard.mjs';
 
-const GRUPOS = ['felino', 'ave', 'primate', 'reptil', 'anfibio', 'acuatico', 'oso', 'herbivoro', 'mamifero', 'insecto', 'domestico'];
+const GROUP_KEYS = ['felino', 'ave', 'primate', 'reptil', 'anfibio', 'acuatico', 'oso', 'herbivoro', 'mamifero', 'insecto', 'domestico'];
 
 const SCHEMA = {
   type: 'object',
@@ -18,7 +18,7 @@ const SCHEMA = {
     cientifico: { type: 'string' },
     confianza: { type: 'number', description: 'De 0 a 1' },
     estado: { type: 'string', description: 'Categoría UICN en español con su sigla, ej. Vulnerable (VU)' },
-    grupo: { type: 'string', enum: GRUPOS },
+    grupo: { type: 'string', enum: GROUP_KEYS },
     habitat: { type: 'string' },
     reproduccion: { type: 'string' },
     dieta: { type: 'string' },
@@ -37,7 +37,7 @@ const PROMPT = `Eres biólogo de campo y apoyas a guardaparques en Colombia. Ana
 - amenaza_humana=true solo si ves armas, trampas, redes, animales cazados o personas cazando; explica en motivo_amenaza.
 - Si no estás seguro de la especie, baja la confianza y da el nivel taxonómico que sí puedas confirmar.`;
 
-const INGLES = '\n- IMPORTANTE: escribe nombre, habitat, reproduccion, dieta, distribucion y motivo_amenaza en inglés. Deja estado en español, con su sigla.';
+const ENGLISH_NOTE = '\n- IMPORTANTE: escribe nombre, habitat, reproduccion, dieta, distribucion y motivo_amenaza en inglés. Deja estado en español, con su sigla.';
 
 export default async (req) => {
   if (req.method === 'GET') return json(200, { configured: hasKey(), model: MODEL() });
@@ -66,7 +66,7 @@ export default async (req) => {
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: image } },
-          { type: 'text', text: body.idioma === 'en' ? PROMPT + INGLES : PROMPT }
+          { type: 'text', text: body.idioma === 'en' ? PROMPT + ENGLISH_NOTE : PROMPT }
         ]
       }]
     });
@@ -75,7 +75,7 @@ export default async (req) => {
     const text = msg.content.filter((b) => b.type === 'text').map((b) => b.text).join('');
     const card = JSON.parse(text);
     card.confianza = Math.max(0, Math.min(1, Number(card.confianza) || 0));
-    if (!GRUPOS.includes(card.grupo)) card.grupo = 'mamifero';
+    if (!GROUP_KEYS.includes(card.grupo)) card.grupo = 'mamifero';
     return json(200, { ...card, modelo: msg.model });
   } catch (e) {
     await logUsage(who.token, { kind, model: MODEL(), ok: false });

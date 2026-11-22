@@ -16,7 +16,7 @@ import { boxColor, COCO_ES } from '../services/ai-local.js';
 
 const PAGE = 50;
 let shown = PAGE, selected = new Set(), filtered = [];
-const FUENTES = { camara: 'Cámara', foto: 'Foto', ipcam: 'Cámara IP', celular: 'Celular', dron: 'Dron', ia: 'IA' };
+const SOURCES = { camara: 'Cámara', foto: 'Foto', ipcam: 'Cámara IP', celular: 'Celular', dron: 'Dron', ia: 'IA' };
 
 export function init() {
   $('#recSearch').addEventListener('input', () => { shown = PAGE; render(); });
@@ -76,7 +76,7 @@ async function render() {
       <td class="sp"><b>${esc(s.nombre)}</b><small>${esc(s.cientifico)}</small></td>
       <td class="mono" style="white-space:nowrap">${fmtDate(s.created_at)}</td>
       <td class="num">${pct(s.conf)}</td>
-      <td>${esc(devName(s.device_id) || FUENTES[s.fuente] || s.fuente)}${s.ia === 'claude' ? ` <span class="chip info" title="Identificado con IA avanzada">${icon('spark')}</span>` : ''}</td>
+      <td>${esc(devName(s.device_id) || SOURCES[s.fuente] || s.fuente)}${s.ia === 'claude' ? ` <span class="chip info" title="Identificado con IA avanzada">${icon('spark')}</span>` : ''}</td>
       <td class="mono" style="white-space:nowrap">${coord(s.lat, s.lng)}</td>
       <td><div class="row-actions">
         <button class="icon-btn" data-a="photo" title="Ver foto" aria-label="Ver foto">${icon('image')}</button>

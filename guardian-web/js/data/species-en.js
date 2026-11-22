@@ -2,7 +2,7 @@
    GUARDIÁN · Fichas de especies en inglés
    id: [nombre, hábitat, reproducción, alimentación, distribución]
    ========================================================= */
-export const ESPECIES_EN = {
+export const SPECIES_EN = {
   puma: ['Puma', 'From páramos and Andean forests to lowland jungles and savannas.', 'Gestation of about 92 days; 1 to 4 spotted cubs whose markings fade as they grow.', 'Carnivore: deer, capybaras, peccaries, armadillos and large birds.', 'The entire American continent; in Colombia, the three mountain ranges and the Orinoquía.'],
   ocelote: ['Ocelot', 'Humid jungles, gallery forests and mangroves with dense vegetation.', 'Gestation of 79 to 85 days; usually a single young every two years.', 'Carnivore: rodents, opossums, birds, reptiles and fish.', 'From the southern United States to northern Argentina; Amazon, Chocó and Middle Magdalena.'],
   tigrillo: ['Oncilla', 'Cloud and Andean forests between 1,500 and 3,500 m.', 'Gestation of about 75 days; 1 or 2 young.', 'Carnivore: small rodents, birds and lizards.', 'Andes of Colombia, Venezuela, Ecuador and Peru.'],
@@ -85,12 +85,12 @@ export const ESPECIES_EN = {
 };
 
 /** Convierte las fichas en parejas 'texto en español': 'texto en inglés'. */
-export function fichasEnIngles(especies) {
-  const dic = {};
-  for (const s of especies) {
-    const en = ESPECIES_EN[s.id];
+export function englishSpeciesRecords(speciesList) {
+  const dictionary = {};
+  for (const s of speciesList) {
+    const en = SPECIES_EN[s.id];
     if (!en) continue;
-    [s.nombre, s.habitat, s.reproduccion, s.dieta, s.distribucion].forEach((es, i) => { dic[es] = en[i]; });
+    [s.nombre, s.habitat, s.reproduccion, s.dieta, s.distribucion].forEach((es, i) => { dictionary[es] = en[i]; });
   }
-  return dic;
+  return dictionary;
 }

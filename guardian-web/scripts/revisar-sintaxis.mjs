@@ -2,15 +2,15 @@
 import { execFileSync } from 'node:child_process';
 import { readdirSync } from 'node:fs';
 
-const carpetas = ['js', 'netlify', 'scripts', 'estado'];
-const archivos = carpetas.flatMap((c) => readdirSync(c, { recursive: true })
+const folders = ['js', 'netlify', 'scripts', 'estado'];
+const files = folders.flatMap((c) => readdirSync(c, { recursive: true })
   .filter((f) => /\.(m?js)$/.test(f)).map((f) => `${c}/${f.replaceAll('\\', '/')}`));
-archivos.push('sw.js');
+files.push('sw.js');
 
-let malos = 0;
-for (const f of archivos) {
+let bad = 0;
+for (const f of files) {
   try { execFileSync(process.execPath, ['--check', f], { stdio: 'pipe' }); }
-  catch (e) { malos++; console.error(`✗ ${f}\n${e.stderr}`); }
+  catch (e) { bad++; console.error(`✗ ${f}\n${e.stderr}`); }
 }
-console.log(`${archivos.length - malos} de ${archivos.length} archivos sin errores de sintaxis`);
-process.exit(malos ? 1 : 0);
+console.log(`${files.length - bad} de ${files.length} archivos sin errores de sintaxis`);
+process.exit(bad ? 1 : 0);

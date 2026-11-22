@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { json, MODEL, hasKey } from '../../netlify/lib/guard.mjs';
-import { conEntorno } from '../helpers/navegador.mjs';
+import { withEnv } from '../helpers/navegador.mjs';
 
 test('json() responde con el código y el cuerpo en JSON', async () => {
   const r = json(418, { hola: 'mundo' });
@@ -19,12 +19,12 @@ test('json() permite agregar encabezados extra', () => {
 });
 
 test('MODEL() usa Claude Sonnet 5.5 si no se configura otro', () =>
-  conEntorno({ ANTHROPIC_MODEL: undefined }, () => assert.equal(MODEL(), 'claude-sonnet-5-5')));
+  withEnv({ ANTHROPIC_MODEL: undefined }, () => assert.equal(MODEL(), 'claude-sonnet-5-5')));
 
 test('MODEL() respeta el modelo configurado en Netlify', () =>
-  conEntorno({ ANTHROPIC_MODEL: 'claude-opus-5-5' }, () => assert.equal(MODEL(), 'claude-opus-5-5')));
+  withEnv({ ANTHROPIC_MODEL: 'claude-opus-5-5' }, () => assert.equal(MODEL(), 'claude-opus-5-5')));
 
 test('hasKey() solo es verdadero si existe la clave de Anthropic', async () => {
-  await conEntorno({ ANTHROPIC_API_KEY: undefined }, () => assert.equal(hasKey(), false));
-  await conEntorno({ ANTHROPIC_API_KEY: 'clave-de-prueba' }, () => assert.equal(hasKey(), true));
+  await withEnv({ ANTHROPIC_API_KEY: undefined }, () => assert.equal(hasKey(), false));
+  await withEnv({ ANTHROPIC_API_KEY: 'clave-de-prueba' }, () => assert.equal(hasKey(), true));
 });

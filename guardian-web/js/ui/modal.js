@@ -6,18 +6,18 @@
 import { esc } from '../core/dom.js';
 import { icon } from './icons.js';
 
-let contador = 0;
-const ENFOCABLES = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+let counter = 0;
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function openModal({ title = '', html = '', wide = false, actions = [], onClose } = {}) {
-  const antes = document.activeElement;          // al cerrar, el foco vuelve aquí
-  const idTitulo = `modal-titulo-${++contador}`;
+  const previousFocus = document.activeElement;          // al cerrar, el foco vuelve aquí
+  const titleId = `modal-titulo-${++counter}`;
   const back = document.createElement('div');
   back.className = 'modal-backdrop';
   back.innerHTML = `
-    <div class="modal ${wide ? 'wide' : ''}" role="dialog" aria-modal="true" aria-labelledby="${idTitulo}">
+    <div class="modal ${wide ? 'wide' : ''}" role="dialog" aria-modal="true" aria-labelledby="${titleId}">
       <div class="row between" style="margin-bottom:8px">
-        <h3 id="${idTitulo}">${esc(title)}</h3>
+        <h3 id="${titleId}">${esc(title)}</h3>
         <button class="icon-btn" data-close aria-label="Cerrar">${icon('x')}</button>
       </div>
       <div class="modal-body">${html}</div>
@@ -26,19 +26,19 @@ export function openModal({ title = '', html = '', wide = false, actions = [], o
   const close = (v) => {
     back.remove();
     document.removeEventListener('keydown', onKey);
-    if (antes?.isConnected) antes.focus?.();
+    if (previousFocus?.isConnected) previousFocus.focus?.();
     onClose?.(v);
   };
   const onKey = (e) => {
     if (e.key === 'Escape') { close(null); return; }
     if (e.key !== 'Tab') return;
     // El foco se queda dentro de la ventana (Tab y Shift+Tab dan la vuelta)
-    const lista = [...back.querySelectorAll(ENFOCABLES)].filter((el) => el.offsetParent !== null || el === document.activeElement);
-    if (!lista.length) return;
-    const primero = lista[0], ultimo = lista[lista.length - 1];
-    if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
-    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
-    else if (!back.contains(document.activeElement)) { e.preventDefault(); primero.focus(); }
+    const entries = [...back.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null || el === document.activeElement);
+    if (!entries.length) return;
+    const firstItem = entries[0], lastItem = entries[entries.length - 1];
+    if (e.shiftKey && document.activeElement === firstItem) { e.preventDefault(); lastItem.focus(); }
+    else if (!e.shiftKey && document.activeElement === lastItem) { e.preventDefault(); firstItem.focus(); }
+    else if (!back.contains(document.activeElement)) { e.preventDefault(); firstItem.focus(); }
   };
   back.addEventListener('click', (e) => { if (e.target === back || e.target.closest('[data-close]')) close(null); });
   document.addEventListener('keydown', onKey);

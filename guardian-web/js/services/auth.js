@@ -176,10 +176,10 @@ export async function mfaDisable(factorId) {
 }
 
 /* ---------- Auditoría ---------- */
-export async function audit(accion, detalle = {}) {
+export async function audit(actionName, detail = {}) {
   if (!sb() || !auth.user) return;
   try {
-    await sb().from('audit_log').insert({ accion, detalle, user_agent: navigator.userAgent.slice(0, 250) });
+    await sb().from('audit_log').insert({ accion: actionName, detalle: detail, user_agent: navigator.userAgent.slice(0, 250) });
   } catch { /* la auditoría nunca debe frenar la app */ }
 }
 

@@ -4,7 +4,7 @@
    Eventos: data:sightings, data:alerts, data:reports, data:trash,
             ai:status, auth:change, device:change, settings:change
    ========================================================= */
-import { registrar } from './fallos.js';
+import { logError } from './fallos.js';
 const handlers = new Map();
 
 export const bus = {
@@ -15,7 +15,7 @@ export const bus = {
   },
   emit(evt, payload) {
     handlers.get(evt)?.forEach((fn) => {
-      try { fn(payload); } catch (e) { registrar(`evento ${evt}`, e); }
+      try { fn(payload); } catch (e) { logError(`evento ${evt}`, e); }
     });
   }
 };

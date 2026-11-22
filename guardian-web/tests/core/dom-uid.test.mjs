@@ -9,6 +9,6 @@ test('uid() crea identificadores con formato UUID v4 (como Supabase)', () => {
 });
 
 test('uid() no repite identificadores', () => {
-  const muchos = new Set(Array.from({ length: 2000 }, uid));
-  assert.equal(muchos.size, 2000);
+  const many = new Set(Array.from({ length: 2000 }, uid));
+  assert.equal(many.size, 2000);
 });

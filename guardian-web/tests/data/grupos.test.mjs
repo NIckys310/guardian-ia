@@ -14,8 +14,8 @@ test('cada grupo del mapa tiene nombre, color, ejemplo y dibujo', () => {
 });
 
 test('los colores de los grupos no se repiten (la leyenda debe distinguirlos)', () => {
-  const colores = Object.values(GROUPS).map((g) => g.color.toLowerCase());
-  assert.equal(new Set(colores).size, colores.length);
+  const colors = Object.values(GROUPS).map((g) => g.color.toLowerCase());
+  assert.equal(new Set(colors).size, colors.length);
 });
 
 test('los íconos especiales del mapa tienen descripción para la leyenda', () => {

@@ -54,8 +54,8 @@ export function showPairing(code, onDone) {
     try {
       const s = await signInDevice();
       if (!s.ok) throw new Error(s.error);
-      const tipo = /iPad|Tablet/i.test(navigator.userAgent) ? 'tablet' : 'celular';
-      const { data, error } = await sb().rpc('vincular_dispositivo', { p_code: f.code.trim().toUpperCase(), p_nombre: f.name.trim(), p_tipo: tipo, p_user_agent: navigator.userAgent });
+      const typeName = /iPad|Tablet/i.test(navigator.userAgent) ? 'tablet' : 'celular';
+      const { data, error } = await sb().rpc('vincular_dispositivo', { p_code: f.code.trim().toUpperCase(), p_nombre: f.name.trim(), p_tipo: typeName, p_user_agent: navigator.userAgent });
       if (error) throw error;
       if (!data?.ok) throw new Error(data?.error || 'No se pudo vincular');
       await sb().auth.refreshSession();

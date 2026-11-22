@@ -12,7 +12,7 @@ import { active, insert, moveToTrash, restore } from '../services/repo.js';
 import { auth } from '../services/auth.js';
 import { sb } from '../services/cloud.js';
 import { groupOf } from '../data/groups.js';
-import { LOCALE, traducirHtml } from '../core/i18n.js';
+import { LOCALE, translateHtml } from '../core/i18n.js';
 
 const iso = (d) => d.toISOString().slice(0, 10);
 
@@ -72,17 +72,17 @@ function preview() {
 async function save() {
   const c = collect();
   if (c.to < c.from) return toast('La fecha "hasta" debe ser posterior a "desde"', 'err');
-  const titulo = $('#repTitle').value.trim() || 'Reporte ambiental';
-  const notas = $('#repNotes').value.trim();
-  const resumen = {
+  const titleText = $('#repTitle').value.trim() || 'Reporte ambiental';
+  const notes = $('#repNotes').value.trim();
+  const summaryText = {
     avistamientos: c.sightings.length, especies: c.species.length, amenazadas: c.threatened.length,
     alertas: c.alerts.length, pendientes: c.alerts.filter((a) => !a.atendida).length,
     top: c.species.slice(0, 5).map((s) => ({ nombre: s.nombre, n: s.n })), autor: auth.displayName
   };
-  const html = buildHTML(titulo, notas, c);
+  const html = buildHTML(titleText, notes, c);
   const btn = $('#btnSaveReport');
   btn.disabled = true;
-  const row = await insert('report', { titulo, desde: c.from.toISOString(), hasta: c.to.toISOString(), notas, resumen, html });
+  const row = await insert('report', { titulo: titleText, desde: c.from.toISOString(), hasta: c.to.toISOString(), notas: notes, resumen: summaryText, html });
   if (sb() && auth.user && c.species.length) {
     sb().from('report_species').insert(c.species.map((s) => ({ report_id: row.id, species_id: s.id, nombre: s.nombre, estado: s.estado || '', n: s.n }))).then(() => {});
   }
@@ -129,15 +129,15 @@ function openReport(r, print = false) {
     actions: [{ label: 'Imprimir', icon: 'print', cls: 'primary', fn: () => { m.el.querySelector('iframe').contentWindow.print(); return false; } }]
   });
   const frame = m.el.querySelector('iframe');
-  frame.srcdoc = traducirHtml(r.html);
+  frame.srcdoc = translateHtml(r.html);
   if (print) frame.onload = () => frame.contentWindow.print();
 }
 
 /* Reporte autónomo (se ve igual dentro de años) */
-function buildHTML(titulo, notas, c) {
+function buildHTML(titleText, notesValue, c) {
   const rowS = c.species.map((s) => `<tr><td><span class="dot" style="background:${groupOf(s.grupo).color}"></span>${esc(s.nombre)}</td><td><i>${esc(s.cientifico)}</i></td><td>${esc(s.estado)}</td><td class="n">${s.n}</td><td class="n">${pct(s.max)}</td></tr>`).join('');
   const rowA = c.alerts.map((a) => `<tr><td>${fmtDate(a.created_at)}</td><td>${esc(a.tipo)}</td><td>${esc(a.mensaje)}</td><td>${(+a.lat).toFixed(4)}, ${(+a.lng).toFixed(4)}</td><td>${a.atendida ? 'Atendida' : '<b style="color:#c8361f">Pendiente</b>'}</td></tr>`).join('');
-  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${esc(titulo)}</title>
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${esc(titleText)}</title>
 <style>
   body{font-family:Georgia,'Times New Roman',serif;color:#1b241d;max-width:860px;margin:0 auto;padding:36px 28px;background:#fbfaf5}
   header{border-bottom:3px solid #557a2a;padding-bottom:14px;margin-bottom:22px}
@@ -155,12 +155,12 @@ function buildHTML(titulo, notas, c) {
   footer{margin-top:34px;font:500 11px ui-monospace,Consolas,monospace;color:#8a9584}
   @media print{body{background:#fff;padding:0}}
 </style></head><body>
-<header><div class="k">Guardián · Estación de fauna · Reporte ambiental</div><h1>${esc(titulo)}</h1>
+<header><div class="k">Guardián · Estación de fauna · Reporte ambiental</div><h1>${esc(titleText)}</h1>
 <div class="m">Período: ${fmtDay(c.from)} — ${fmtDay(c.to)} · Generado el ${fmtDate(Date.now())} por ${esc(auth.displayName)}</div></header>
 <div class="kpis"><div><b>${c.sightings.length}</b><span>avistamientos</span></div><div><b>${c.species.length}</b><span>especies</span></div><div><b>${c.threatened.length}</b><span>especies amenazadas</span></div><div><b>${c.alerts.length}</b><span>alertas (${c.alerts.filter((a) => !a.atendida).length} pendientes)</span></div></div>
 <h2>Resumen</h2>
 <p>Durante el período se registraron <b>${c.sightings.length}</b> avistamientos de <b>${c.species.length}</b> especies${c.species[0] ? `; la más observada fue <b>${esc(c.species[0].nombre)}</b> (${c.species[0].n})` : ''}. ${c.threatened.length ? `Se observaron <b>${c.threatened.length}</b> especies con algún grado de amenaza: ${c.threatened.map((s) => esc(s.nombre)).join(', ')}.` : 'No se observaron especies amenazadas.'} Se generaron <b>${c.alerts.length}</b> alertas de posible caza furtiva.</p>
-${notas ? `<h2>Notas del guardaparques</h2><div class="notes">${esc(notas)}</div>` : ''}
+${notesValue ? `<h2>Notas del guardaparques</h2><div class="notes">${esc(notesValue)}</div>` : ''}
 <h2>Especies observadas</h2>
 ${c.species.length ? `<table><tr><th>Especie</th><th>Nombre científico</th><th>Estado UICN</th><th>Avist.</th><th>Conf. máx.</th></tr>${rowS}</table>` : '<p class="m">Sin avistamientos en el período.</p>'}
 <h2>Alertas</h2>
