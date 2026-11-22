@@ -16,7 +16,7 @@ import { geo, DEFAULT_CENTER } from '../services/geo.js';
 import { setMapCenterFn } from '../services/events.js';
 import { findSpecies } from '../ui/species-ui.js';
 
-let map, cluster, alertLayer, deviceLayer, rangeLayer, meMarker;
+let map, cluster, deviceLayer, rangeLayer, meMarker;
 let rangeDays = 30, centeredOnMe = false;
 const hidden = new Set(JSON.parse(localStorage.getItem('guardian.mapHidden') || '[]'));
 const saveHidden = () => localStorage.setItem('guardian.mapHidden', JSON.stringify([...hidden]));
@@ -36,7 +36,6 @@ export function init() {
       return L.divIcon({ html: `<div class="cluster ${alert ? 'has-alert' : ''}" style="width:${size}px;height:${size}px">${n}</div>`, className: '', iconSize: [size, size] });
     }
   }).addTo(map);
-  alertLayer = cluster;               // las alertas comparten agrupación
   deviceLayer = L.layerGroup().addTo(map);
   rangeLayer = L.layerGroup().addTo(map);
 

@@ -10,7 +10,7 @@ import { toast } from '../ui/toast.js';
 import { openLightbox } from '../ui/lightbox.js';
 import { plateHTML, groupBadge } from '../ui/species-ui.js';
 import { settings, saveSettings } from '../services/settings.js';
-import { ai, analyzeFrame, modelsReady, loadModels, boxesFor, COCO_ES, THREATS, ALL_SPECIES } from '../services/ai-local.js';
+import { analyzeFrame, modelsReady, loadModels, boxesFor, COCO_ES, THREATS, ALL_SPECIES } from '../services/ai-local.js';
 import { claude, identifyWithClaude, AIError } from '../services/ai-cloud.js';
 import { recordSighting, raiseAlert } from '../services/events.js';
 import { askNotificationPermission } from '../services/notify.js';

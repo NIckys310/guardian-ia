@@ -24,6 +24,8 @@ jobs:
         run: npm ci
       - name: Revisar sintaxis
         run: npm run test:sintaxis
+      - name: Análisis estático (ESLint)
+        run: npm run lint
       - name: Pruebas automáticas
         run: npm test
       - name: Navegador para las pruebas de interfaz
