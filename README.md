@@ -4,6 +4,10 @@ App web instalable (PWA) para guardaparques: reconoce fauna con la cámara, regi
 ante posible caza furtiva. En línea: **https://guardian-fauna.netlify.app** · Estado de los servicios:
 **https://guardian-fauna.netlify.app/status/**
 
+## 🎬 Video de presentación
+
+**[▶ Ver el video de Guardián (4:55)](video/Guardian_presentacion.mp4)**: qué problema resuelve, qué hace, una demo, la arquitectura, la calidad y los aprendizajes. Narrado por Nicoll Valentina.
+
 ## Estructura del repositorio
 ```
 guardian-ia/
